@@ -1,0 +1,6 @@
+Jugador1-Juan-M
+Jugador2-Ana-A
+7
+Portaaviones,Acorazado,Crucero,Destructor,Fragata,Submarino
+1,2,1,3,2,7
+Jugador1
