@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "Datos.h"  // Asegúrate de incluir el archivo de cabecera correcto
 
 int main() {
@@ -7,6 +8,13 @@ int main() {
 
     // Mostrar la configuración cargada
     mostrar_configuracion(config);
+
+	modificar_config(&config);
+
+    mostrar_configuracion(config);
+    
+    // Guardar la configuración en el archivo
+    guardar_config(config);
 
     // Liberar memoria dinámica
     free(config.Tipo_barcos);

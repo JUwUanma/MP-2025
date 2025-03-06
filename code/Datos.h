@@ -69,6 +69,10 @@ Esta funcion hay que mirar si es necesaria, ya que no hay posibilidad de modific
 
 */
 
+//Precondición: Recibe la estructura ConfiguracionJuego
+//Postcondición: Devuelve la estructura ConfiguracionJuego modificada con los parametros que indique el usuario
+
+void guardar_config(ConfiguracionJuego);
 
 //=====================================================================================================================
 
@@ -80,5 +84,10 @@ void mostrar_barcos(Vector_Barcos);
 //Precondición: Recibe una estructura tipo ConfiguracionJuego
 //Postcondición: Muestra por pantalla un listado con la configuración inicial del juego
 void mostrar_configuracion(ConfiguracionJuego);
+
+
+//Precondición: Recibe la referencia de la estructura ConfiguracionJuego para modificarla
+//Postcondición: Modifica la estructura ConfiguracionJuego con los parametros que indique el usuario
+void modificar_config(ConfiguracionJuego*);
 
 #endif //BARCO_H_INCLUDED
