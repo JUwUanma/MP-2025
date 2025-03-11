@@ -6,7 +6,7 @@ void MenuPrincipal() {
 
     // Mensaje de bienvenida (se muestra solo al iniciar el juego)
     printf("\n========================================\n");
-    printf("       IENVENIDO A HUNDIR LA FLOTA!\n");
+    printf("       隆BIENVENIDO A HUNDIR LA FLOTA!\n");
     printf("========================================\n");
 
     do {
@@ -28,7 +28,7 @@ void MenuPrincipal() {
                 printf("Saliendo del juego...\n");
                 break;
             default:
-                printf("Opci髇 no valida. Intente de nuevo.\n");
+                printf("Opci贸n no valida. Intente de nuevo.\n");
         }
     } while (opcion != 3);
 }
@@ -49,7 +49,7 @@ void MenuConfiguracion() {
         switch (opcion) {
             case 1:
                 printf("Funcion introducir datos.\n");
-                // Llamado a la funci髇 correspondiente del m骴ulo de memoria.
+                // Llamado a la funci贸n correspondiente del m贸dulo de memoria.
                 break;
             case 2:
                 printf("Muestra configuracion.\n");
@@ -59,11 +59,11 @@ void MenuConfiguracion() {
                 break;
             case 4:
                 printf("Guardar configuracion.\n");
-                // Llamado a la funci髇 de guardar del m骴ulo de memoria.
+                // Llamado a la funci贸n de guardar del m贸dulo de memoria.
                 break;
             case 5:
                 printf("Cargar configuracion.\n");
-                // Llamado a la funci髇 de carga del m骴ulo de memoria.
+                // Llamado a la funci贸n de carga del m贸dulo de memoria.
                 break;
             case 6:
                 printf("Regresando al menu principal...\n");
@@ -87,13 +87,13 @@ void MenuJuego() {
 
         switch (opcion) {
             case 1:
-                printf("Funcionalidad para jugar partida.\n");
+                printf("Funcion Jugar partida.\n");
                 break;
             case 2:
-                printf("Funcionalidad para reiniciar partida.\n");
+                printf("Funcion Reiniciar partida.\n");
                 break;
             case 3:
-                printf("Funcionalidad para mostrar resumen.\n");
+                printf("Funcion Mostrar resumen.\n");
                 break;
             case 4:
                 printf("Regresando al menu principal...\n");
