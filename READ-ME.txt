@@ -1,0 +1,125 @@
+TO DO:
+En el módulo de Datos, el struct "jugador" cambiar la matriz por el struct "flota" del módulo Flota.h
+
+colocarManual()
+colocarAleatorio()
+
+Para ello usaremos una casilla especial: '0' que representa las casillas adyacentes a barcos y NO son ocupables, pero en esencia representan lo mismo que una casilla de agua ' '.
+
+
+
+HUNDIR LA FLOTA RESUMEN
+-----------------------
+
+Se enfrentan dos jugadores, cada uno con 2 tableros, el suyo y el del contrincante. El del jugador contiene sus propios barcos (nº de barcos determinado de diferente tam, flota).
+El del contrincante, el jugador registra los disparos contra el tablero rival.
+
+El juego consiste en varias rondas, donde el jugador dispara contra el tablero rival, el juego termina cuando todos los barcos de un jugador hayan sido derribados.
+
+El tamaño y nombre de los barcos se almacena en Barcos.txt --> volcado en memoria al iniciar el juego.
+
+Barcos.txt
+----------
+Nomb_barco (20 char)
+Id_barco (1 char)
+Tam_barco (int)
+
+Ej: Portaaviones-P-6
+
+TABLEROS
+--------
+
+TABLERO FLOTA:
+Contiene la ubicación de los barcos del jugador y será invisible para su oponente. Colocación de manera manual o bien aleatoria. El sentido de los barcos puede ser vertical, horizontal o diagonal. No modificable durante la partida, solo consultada. Ambos tableros flota deberán tener el mismo tipo y número de barcos. Al menos 1 casilla vacía entre ellos.
+
+TABLERO OPONENTE:
+Registra los resultados de los disparos del jugador. Cada casilla puede obtener los siguientes valores:
+- Vacío: Valor inicial (inicializarlo)
+- Agua (*): Disparo al agua
+- Tocado (T): Impacto
+- Hundido (H): Barco totalmente destruido.
+
+
+
+
+ESPECIFICACIÓN FLOTA.H
+----------------------
+
+typedef struct{
+		int xMax;
+		int yMax;
+		int* flotaTablero[][];
+}flota;
+
+Observadoras
+------------
+
+void mostrarFlota(jugador j)
+P: N/A
+Q: Muestra la flota del jugador j.
+
+
+
+Modificadoras / Constructoras
+----------------------------
+
+*****
+tablero* crearTablero()
+P: N/A
+Q: Crea un tablero vacío (?)
+
+void modificarBarcos()
+P: Partida NO iniciada
+Q: Borra el fichero Barcos.txt y genera uno nuevo a partir de E/S de usuario
+
+void colocarManual(jugador* j)
+P: N/A
+Q: Accede al menú para colocar los barcos de manera manual
+
+void colocarAleatorio(jugador* j)
+P: N/A
+Q: Genera un mapa de barcos aleatorio
+
+
+
+
+ESPECIFICACIÓN OPONENTE.H
+-------------------------
+
+typedef struct{
+		int xMax;
+		int yMax;
+		int* oponente[][];
+}oponente;
+
+Observadoras
+------------
+
+void mostrarOponente(int & [][][]) //int jugador
+P: N/A
+Q: Muestra por pantalla el tablero oponente
+
+
+Modificadoras / Constructoras
+-----------------------------
+
+registrarDisparo(jugador* jugadorAttack, jugador* jugadorReceive, int x, int y)
+P: N/A
+Q: Registra un disparo en la coordenada x,y de parte del jugadorAtack hacia el jugadorReceive. Si es agua --> *, Si es tocado --> T, Si es hundido --> H, lo guarda en tablero oponente del jugador Atack y lo guarda en tablero flota del jugador Defense.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
