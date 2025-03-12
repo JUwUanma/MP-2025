@@ -4,6 +4,8 @@
 #define LONG_MAX_JUEGO 100
 #define LONG_MAX_CONFIG 100
 
+#include "Tablero.h"
+
 //Estructura Barco: Almacena la informacion de cada barco en el sistema
 typedef struct{
     char Nomb_barco[20];    //Nombre del barco
@@ -25,8 +27,8 @@ typedef struct{
     char Tipo_disparo;          		//Tipo de disparo seleccionado (A -> Automatico [sistema], M -> Manual [pregunta al jugador])
     int Num_disparos;           		//Contador del numero de disparos de dicho jugador en cada turno
     int Ganador;                		//Indicador de si ha ganado la partida (0 -> Falso, 1 -> Verdadero)
-    char Tablero_flota[15][15];       	//Tablero de la flota del jugador
-    char Tablero_oponente[15][15];    	//Tablero del oponente
+    Tablero Tablero_flota;       	    //Tablero de la flota del jugador
+    Tablero Tablero_oponente;    	    //Tablero del oponente
 }Jugador;
 
 
