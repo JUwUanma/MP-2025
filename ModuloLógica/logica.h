@@ -3,38 +3,30 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "Datos.h"
+#include "Tablero.h"
 
 //Funciones:
 
 
-//FUNCIONES DE VERIFICACI覰
 
-//Precondici髇: Recibe la estructura rellena de ConfiguracionJuego [M骴ulo Datos], y las posiciones ocupadas del barco(a鷑 por determinar)
-//Postcondici髇: Devuelve un entero que indica si la posici髇 del barco es v醠ida o no. 1=V醠ida 0=No v醠ida
-int verificar_barco(ConfiguracionJuego ConfiguracionJuego,"posiciones");
+//FUNCIONES DE LOS DISPAROS [POSIBLE M脫DULO APARTE SI SE NECESITAN FUTURAS FUNCIONES]
 
-
-//Precondici髇: Recibe unas coordenadas x,y (expresadas como n鷐eros enteros) y la estructura del tablero[M骴ulo de tableros]
-//Postcondici髇: Devuelve un entero que indica si esa posici髇 es v醠ida
-int verificar_posicion(int i, int j, Tablero t);
-
-
-
-//FUNCIONES DE LOS DISPAROS [POSIBLE M覦ULO APARTE SI SE NECESITAN FUTURAS FUNCIONES]
-
-//Precondici髇: Recibe una estructura como puntero (Ya sea de J1 o J2)
-//Postcondici髇:En funci髇 del tipo de disparo del jugador, se modifica la estructura
-//              si el disparo es tipo autom醫ico, se ejecuta un algoritmo que realice el disparo
+//Precondici贸n: Recibe una estructura como puntero (Ya sea de J1 o J2)
+//Postcondici贸n:En funci贸n del tipo de disparo del jugador, se modifica la estructura
+//              si el disparo es tipo autom谩tico, se ejecuta un algoritmo que realice el disparo
 //              de lo contrario, el usuario introduce las coordenadas.
-//NOTA: Esta funci髇 puede cambiar, es decir, puede ser modificada de manera que haga los cambios y muestre
-//      los resultados en pantalla, eliminando la siguiente funci髇 a esta y a馻diendo sus argumentos.
+//NOTA: Esta funci贸n puede cambiar, es decir, puede ser modificada de manera que haga los cambios y muestre
+//      los resultados en pantalla, eliminando la siguiente funci贸n a esta y a帽adiendo sus argumentos. 
 void disparo(Jugador *j, Tablero *t);
 
 
 
-//Precondici髇: Recibe las coordenadas del disparo, el puntero a estructura Tablero[Del m骴ulo de tu mama]
-//Postcondici髇: Modifica el resultado en el tablero.
+//Precondici贸n: Recibe las coordenadas del disparo, el puntero a estructura Tablero[Del m贸dulo de tu mama]
+//Postcondici贸n: Modifica el resultado en el tablero.
 void resultado_disparo(int i, int j, Tablero *t);
 
+
+#endif
 
 #endif //LOGICA_H
