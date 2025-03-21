@@ -26,7 +26,4 @@ void disparo(Jugador *j, Tablero *t);
 //Postcondición: Modifica el resultado en el tablero.
 void resultado_disparo(int i, int j, Tablero *t);
 
-
-#endif
-
 #endif //LOGICA_H
