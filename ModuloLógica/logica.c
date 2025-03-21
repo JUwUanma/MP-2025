@@ -1,28 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h> //sleep(tiempo)
 #include "Datos.h"
 #include "Tablero.h"
-/*
-int verificar_barco(ConfiguracionJuego ConfiguracionJuego,int x, int y){
 
-
-}
-
-int verificar_posicion(int i, int j, Tablero t){
-
-    int dim= Tablero.xMax; //Dimensión del tablero, como el tablero debe ser cuadrado xMax=yMax
-    //int yMax= Tablero.yMax;  
-
-    if (i >= 0 && i <= dim && j >= 0 && j <= dim){
-        return 1;
-    }
-    else{
-        return 0;
-    }
-
-}
-*/
 void disparo(Jugador *j,Tablero *t){
 
     int x=0, y=0;
@@ -41,11 +23,29 @@ void disparo(Jugador *j,Tablero *t){
         }
         else{puts("Coordenadas no válidas");}
         
-        }while(coordsCorrectas!=1&&t->casillas[x][y]!=' ');
+        }while(coordsCorrectas!=1&&isLibre(t,x,y));//nota para el futuro: mostrar mensaje según contenido de la casilla
         
-    
+        //j: Jugador que ejecuta el disparo, 1: tablero del oponente, x y: coords
 
-        //Realizar el cambio
+            if (devolverCasilla(j,1,x,y)=='identificador de barco'){//Caso de que haya tocado un barco
+
+
+
+
+            }
+            else{
+                
+                colocarCasilla('*', j, 1, x, y);
+                printf("  _ _    _              __      _ _           _       _ \n");
+                printf(" (_) |  | |            / _|    | | |         | |     | |\n");
+                printf(" | | |__| | __ _ ___  | |_ __ _| | | __ _  __| | ___ | |\n");
+                printf(" | |  __  |/ _` / __| |  _/ _` | | |/ _` |/ _` |/ _ \\| |\n");
+                printf(" | | |  | | (_| \\__ \\ | || (_| | | | (_| | (_| | (_) |_|\n");
+                printf(" |_|_|  |_|\\__,_|___/ |_| \\__,_|_|_|\\__,_|\\__,_|\\___/(_)\n");
+                sleep(3);
+                //Mostrar tablero
+            }
+
         (j->Num_disparos)++;
     }
     else{ //Bloque de disparo automático
@@ -61,5 +61,5 @@ void disparo(Jugador *j,Tablero *t){
 
         (j->Num_disparos)++;
     }
-
 }
+
