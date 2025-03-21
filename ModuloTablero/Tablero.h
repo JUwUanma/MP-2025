@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define MAX_RANDOM_TRIES 300
+
 //enum para bool en C
 enum bool {false, true};
 
@@ -12,7 +14,10 @@ enum bool {false, true};
 enum motesTableros {FLOTA, OPONENTE};
 
 //Orientación de colocación de barcos en tablero. Grados en eje cartesiano habitual. Nomenclatura: G(grado)
-enum orientacion {G0, G45, G90, G135, G180, G225, G270, G315}
+enum orientacion {G0, G45, G90, G135, G180, G225, G270, G315};
+
+//Dirección de rotación -> rotar()
+enum direccion {IZQUIERDA, DERECHA};
 
 //Devuelve 1 si se ha respondido Y o y
 //Devuelve 0 si se ha respondido N o n
@@ -44,6 +49,10 @@ Q: Devuelve lo que hay en la casilla [x,y] del jugador j del tablero indicado
 ENUM: FLOTA(0) OPONENTE(1)*/
 char devolverCasilla(Jugador* j, int tablero, int x, int y);
 
+/*P: Tablero T creado, nCasilas > 0, x, y e orient válidos
+Q: Pone a vacío nCasillas, desde x e y en el tablero T en la orientacion indicada
+*/
+void vaciarEspacio(Tablero* T, int nCasillas, int orient, int x, int y)
 
 /*P: Tablero T creado
 Q: Devuelve 1 si la casilla x,y está libre (' ') y 0 si está ocupada
@@ -67,5 +76,13 @@ Q: Coloca en la casilla [x,y] del jugador j del tablero indicado el caracter int
 Devuelve 1 si se ha colocado correctamente, 0 sino.
 ENUM: FLOTA(0) OPONENTE(1)*/
 int colocarCasilla(char c, Jugador* j, int tablero, int x, int y);
+
+//P: orientacion válida -> enum orientacion.
+//Q: Mueve la coordenada x, y una casilla a la orientación indicada.
+void moverAOrientacion(int orientacion, int x, int y);
+
+/*P: orientBase y grados válida -> enum orientacion. dirección válida -> enum direccion
+Q: Rota orientBase los grados indicados a la dirección indicada. Da la vuelta si lo necesita.*/
+void rotar(int* orientBase, int grados, int direccion);
 
 #endif //_TABLERO_H_
