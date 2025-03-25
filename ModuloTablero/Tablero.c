@@ -5,7 +5,7 @@
 static void mostrarTablero(Tablero* t);
 static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes);
 static void compactarVector(Vector_Barcos* vect, int barcoSeleccionado, int nBarcos);
-static void colocacionBarco(Barco B, Jugador* j);
+static int colocacionBarco(Barco* B, Jugador* j);
 
 inline static void jump(int j){for(int i=0; i<j; i++) printf("\n");}
 //Devuelve 1 si se ha respondido N o n, y 0 sino.
@@ -52,14 +52,14 @@ void mostrarFlota(Jugador* j)
 {
     printf("\n\nFLOTA DEL JUGADOR %d: %s\n\n---------------------", j->Nomb_jugador, j->Id_jugador);
     //Método Privado para mostrar el tablero
-    mostrarTablero(j->flota);
+    mostrarTablero(&j->Tablero_flota);
 }
 
 void mostrarOponente(Jugador* j)
 {
     printf("\n\nTABLERO OPONENTE DEL JUGADOR %d: %s\n\n---------------------", j->Nomb_jugador, j->Id_jugador);
     //Método Privado para mostrar el tablero
-    mostrarTablero(j->oponente);
+    mostrarTablero(&j->Tablero_oponente);
 }
 
 static void mostrarTablero(Tablero* t)
@@ -95,15 +95,14 @@ int respuesta(char c)
     }
 }
 
-    //IMPORTANTE PASAR EL VECTOR DE BARCOS POR VALOR O EN SU DEFECTO HACER UNA COPIA.
-void colocarManual(Jugador* j, Vector_Barcos vect, ConfiguracionJuego c)
+void colocarManual(Jugador* j, Vector_Barcos vect)
 {
     char charBuffer;
-    int nBarcosRestantes = c->tam_flota;
+    int nBarcosRestantes = vect.tam;
     int barcoSelect;
     int flagColocado = true;
     
-    printf("\n\nCOLOCA TU FLOTA %s\n------------------------\n\n", j->Nomb_Jugador);
+    printf("\n\nCOLOCA TU FLOTA %s\n------------------------\n\n", j->Nomb_jugador);
     printf("Modo de colocacion: \n\nEn primer lugar elige el barco a colocar de los ya preestablecidos con 'Y' y pasa al siguiente con 'N'\n\n");
     printf("Una vez seleccionado, se te mostrara el tablero.\n");
     printf("Este icono: '%c' es la casilla en la que te ubicas actualmente.\n Este icono: '%c' son las casillas que ocupará tu barco.\n\n", 178, 176);
@@ -112,11 +111,12 @@ void colocarManual(Jugador* j, Vector_Barcos vect, ConfiguracionJuego c)
     printf("J: Girar 90 g. a la izquierda\nL: Girar 90 g. a la derecha\nI: Girar 45 g. a la izquierda\nK: Girar 45 g. a la derecha\n\n");
     printf("Pulse [Y] para ir al menú de selección de barco. Pulse [N] para salir.");
     
+    //Recoje la tecla pulsada
     scanf("%c", &charBuffer);
     if(!respuesta(charBuffer)) return; //Si se responde N se sale;
 
     while((barcoSelect = barcoSeleccionado(&vect, &nBarcosRestantes)) != -1 && flagColocado){
-        flagColocado = colocacionBarco(vect->Barcos[barcoSelect], j);
+        flagColocado = colocacionBarco(&vect.Barcos[barcoSelect], j);
     }
 
     //Guardar tablero?
@@ -137,7 +137,7 @@ static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes)
         printf("\nSelección de Barco, quedan %d por elegir.\n\nPulse la tecla indicada para seleccionar el barco. [N] para salir.\n\n", nBarcosRestantes);
         //Listado de los barcos restantes en el vector
         for(int i=0; i<nBarcosRestantes; i++)
-            printf("[%d]: %s\n", i, vect->Barcos[i]->Nomb_Barco);    
+            printf("[%d]: %s\n", i, vect->Barcos[i].Nomb_barco);    
         
         //Se registra la tecla. Si es N/n termina la selección.
         scanf("%c", &charBuffer);
@@ -145,7 +145,7 @@ static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes)
 
         //Si la tecla está entre los valores validos, se selecciona.
         if((int)charBuffer >= 0 && (int)charBuffer < nBarcosRestantes){
-            printf("\nSe ha seleccionado %c: %s", charBuffer, vect->Barcos[(int)charBuffer]->Nomb_barco);
+            printf("\nSe ha seleccionado %c: %s", charBuffer, vect->Barcos[(int)charBuffer].Nomb_barco);
 
             //Se quita el barco seleccionado del vector.
             compactarVector(vect, (int)charBuffer, nBarcosRestantes);
@@ -161,7 +161,7 @@ static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes)
 
 
 //Devuelve 1 si se ha colocado el barco B, devuelve 0 si se ha salido del menú o se han acabado los intentos.
-static int colocacionBarco(Barco B, Jugador* j)
+static int colocacionBarco(Barco* B, Jugador* j)
 {
     srand(time(NULL));
     int contStress;
@@ -184,12 +184,12 @@ static int colocacionBarco(Barco B, Jugador* j)
             contStress = 0;
             //Escoge una posición aleatoria y la verifica para el barco B, si no es válida se repite.
             do{ //while (!verificarEspacio())
-                xIni = x = 0 + rand() % j->Tablero_Flota->maxLado;
-                yIni = y = 0 + rand() % j->Tablero_Flota->maxLado;
+                xIni = x = 0 + rand() % j->Tablero_flota.maxLado;
+                yIni = y = 0 + rand() % j->Tablero_flota.maxLado;
                 orientIni = orient = 0 + rand() % G315 + 1;
                 contStress++;
 
-            }while(!verificarEspacio(j->Tablero_Flota, B, orient, x, y) && contStress < MAX_RANDOM_TRIES);
+            }while(!verificarEspacio(&j->Tablero_flota, &B, orient, x, y) && contStress < MAX_RANDOM_TRIES);
 
             if(contStress >= MAX_RANDOM_TRIES){
                 printf("\n\n\nERROR | POSICIÓN VALIDA NO ENCONTRADA\n\n\n", stderr);
@@ -206,7 +206,7 @@ static int colocacionBarco(Barco B, Jugador* j)
                 printf("J: Girar 90 g. a la izquierda\nL: Girar 90 g. a la derecha\nI: Girar 45 g. a la izquierda\nK: Girar 45 g. a la derecha\n\n");
 
                 //Coloca las casillas de vista previa SÓLO SI SON CASILLAS COMPLETAMENTE VACÍAS
-                rellenarCasillas(j->Tablero_Flota, 176, B->Tam_Barco , orient, x, y);
+                rellenarCasillas(&j->Tablero_flota, 176, B->Tam_barco , orient, x, y);
                 colocarCasilla(178, j, FLOTA, x, y);
 
                 //MUESTRA LA FLOTA CON LA VISTA PREVIA YA COLOCADA
@@ -229,7 +229,7 @@ static int colocacionBarco(Barco B, Jugador* j)
                     //Si es enter, se coloca
                     case '\n':
                         flagPlaced = true;
-                        rellenarCasillas(j->Tablero_Flota, B->Tam_Barco + 48, B->Tam_Barco, orient, x, y);
+                        rellenarCasillas(&j->Tablero_flota, B->Tam_barco + 48, B->Tam_barco, orient, x, y);
                         //REGISTRAR POSICIÓN Y DIRECCIÓN BARCO??
                     break;
 
@@ -273,10 +273,10 @@ static int colocacionBarco(Barco B, Jugador* j)
                 //Si se ha colocado no necesita verificarse, si es caracter inválido, nueva iteración del bucle
                 if(!flagPlaced || charBuffer != '0'){
                 //Verifica la nueva posición, si es correcta se va a ella y se ejecuta de nuevo el bucle hasta que se pulse ENTER
-                    if(!verificarEspacio(j->Tablero_Flota, B, orient, x, y)){
+                    if(!verificarEspacio(&j->Tablero_flota, &B, orient, x, y)){
                         printf("\n\nPOSICIÓN NO VALIDA. Elija otra. [R] para reiniciar posicion. [N] para salir\n\n");
                         x = xIni; y = yIni; orient = orientIni;
-                        vaciarCasillas(j->Tablero_Flota, B->Tam_Barco, orient, x, y);
+                        vaciarCasillas(&j->Tablero_flota, B->Tam_barco, orient, x, y);
                     }
                 }
 
@@ -302,88 +302,17 @@ void rellenarCasillas(Tablero* T, char c, int nCasillas, int orient, int x, int 
     }
 }
 
-//Refactorizar? 1 si verificado
-int verificarEspacio(Tablero* T, Barco B, int orientacion, int x, int y)
+int verificarEspacio(Tablero* T, Barco* B, int orientacion, int x, int y)
 {
-    int flagStop = false;
-    switch(orientacion){
+    int tamBarco = B->Tam_barco;
+    int flagValid = true;
 
-        case G0: 
-            if(x + B.tam_barco - 1 <= T->maxLado) flagStop = true;
-            while(!flagStop && x < T->maxLado){
-                if(T->casillas[x][y] != ' ') flagStop = true;
-
-                x++;
-            }
-        break;
-        
-        case G45:
-            if(x + B.tam_barco - 1 <= T->maxLado && y + B.tam_barco - 1 <= T->maxLado) flagStop = true;
-            while(!flagStop && x < T->maxLado && y < T->maxLado){
-                if(T->casillas[x][y] != ' ') flagStop = true;
-
-                x++; y++;
-            }
-        break;
-
-        case G90:
-            if(y + B.tam_barco - 1 <= T->maxLado) flagStop = true;
-            while(!flagStop && x < T->maxLado && y < T->maxLado){
-                if(T->casillas[x][y] != ' ') flagStop = true;
-
-                y++;
-            }
-        break;
-
-        case G135:
-        if(x - B.tam_barco - 1 >= 0 && y + B.tam_barco - 1 <= T->maxLado) flagStop = true;
-            while(!flagStop && x < T->maxLado && y < T->maxLado){
-                if(T->casillas[x][y] != ' ') flagStop = true;
-
-                x--; y++;
-            }
-        break;
-
-        case G180:
-        if(x - B.tam_barco - 1 >= 0) flagStop = true;
-            while(!flagStop && x < T->maxLado && y < T->maxLado){
-                if(T->casillas[x][y] != ' ') flagStop = true;
-
-                x--;
-            }
-        break;
-
-        case G225:
-        if(x - B.tam_barco - 1 >= 0 && y + B.tam_barco - 1 >= 0) flagStop = true;
-            while(!flagStop && x < T->maxLado && y < T->maxLado){
-                if(T->casillas[x][y] != ' ') flagStop = true;
-
-                x--; y--;
-            }
-        break;
-
-        case G270:
-        if(y + B.tam_barco - 1 >= 0) flagStop = true;
-            while(!flagStop && x < T->maxLado && y < T->maxLado){
-                if(T->casillas[x][y] != ' ') flagStop = true;
-
-                y--;
-            }
-        break;
-
-        case G315:
-        if(x - B.tam_barco - 1 <= T->maxLado && y + B.tam_barco - 1 >= 0) flagStop = true;
-            while(!flagStop && x < T->maxLado && y < T->maxLado){
-                if(T->casillas[x][y] != ' ') flagStop = true;
-
-                x++; y--;
-            }
-        break;
-        }
-
-        
-
-    return !flagStop;
+    while(tamBarco != 0 && flagValid){
+        if(!isLibre(T, x, y)) flagValid = false;
+        moverAOrientacion(orientacion, &x, &y);
+        tamBarco--;
+    }
+    return flagValid;
 }
 
 void devolverCoordenadasLibres(Tablero* T, int* x, int* y)
@@ -414,15 +343,15 @@ static void compactarVector(Vector_Barcos* vect, int barcoSeleccionado, int nBar
 }
 
 
-void colocarAleatorio(Jugador* j, Vector_Barcos vect)
+void colocarAleatorio(Jugador* j, Vector_Barcos* vect)
 {
     srand(time(NULL));
     int x, xIni, yIni, y, orient;
     int i = 0;
     int flagErrorColocacion = false;
     int flagColocado = false;
-    int nBarcos = vect.tam;
-    int tamTableroMax = j->Tablero_flota->maxLado;
+    int nBarcos = vect->tam;
+    int tamTableroMax = j->Tablero_flota.maxLado;
 
     //Mientras haya barcos, los coloca
     while(nBarcos){
@@ -435,16 +364,16 @@ void colocarAleatorio(Jugador* j, Vector_Barcos vect)
             
             flagErrorColocacion = false;
             //Mientras no se verifique entero, no haya error de colocación y x e y estén dentro del tablero
-            
-                if(!verificarEspacio(j->Tablero_flota, vect->Barcos[nBarcos-1], orient, x, y)) flagErrorColocacion = true;
+            //Se colocan desde el final hasta el principio
+            if(!verificarEspacio(&j->Tablero_flota, &vect->Barcos[nBarcos-1], orient, x, y)) flagErrorColocacion = true;
 
             if(!flagErrorColocacion){
                 i = 0;
                 x = xIni; y = yIni;
-                while(i != vect->Barco->Tam_Barco){
+                while(i != vect->Barcos[nBarcos-1].Tam_barco){
                     i++;
                     //Se coloca cómo casilla el tamaño del barco en carácter.
-                    colocarCasilla(vect->Barco->Tam_Barco + 48, j, FLOTA, x, y);
+                    colocarCasilla(vect->Barcos[nBarcos-1].Tam_barco + 48, j, FLOTA, x, y);
                     moverAOrientacion(orient, &x, &y);
                 }
                 nBarcos--;
@@ -509,13 +438,13 @@ void rotar(int* orientBase, int grados, int direccion)
     
 }
 
-inline char devolverCasilla(Jugador* j, int tablero, int x, int y) {return (tablero)? j->oponente->casillas[x][y] : j->flota->casillas[x][y];}
+inline char devolverCasilla(Jugador* j, int tablero, int x, int y) {return (tablero)? j->Tablero_oponente.casillas[x][y] : j->Tablero_flota.casillas[x][y];}
 
 inline void colocarCasilla(char c, Jugador* j, int tablero, int x, int y){
     if(tablero){
-        j->oponente->casillas[x][y] = c;
+        j->Tablero_oponente.casillas[x][y] = c;
     }else{
-        j->flota->casillas[x][y] = c;
+        j->Tablero_flota.casillas[x][y] = c;
     }
 }
 
