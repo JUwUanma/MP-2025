@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "../ModuloMemoria/Datos.h"
 
 #define MAX_RANDOM_TRIES 300
 
@@ -38,7 +39,7 @@ void mostrarOponente(Jugador* j);
 
 /*P: N/A
 Q: Accede al menú para colocar los barcos de manera manual en el Tablero flota*/
-void colocarManual(Jugador* j);
+void colocarManual(Jugador* j, Vector_Barcos vect);
 
 /*P: N/A
 Q: Genera un mapa de barcos aleatorio en el Tablero flota*/
@@ -52,7 +53,7 @@ char devolverCasilla(Jugador* j, int tablero, int x, int y);
 /*P: Tablero T creado, nCasilas > 0, x, y e orient válidos
 Q: Pone a vacío nCasillas, desde x e y en el tablero T en la orientacion indicada
 */
-void vaciarEspacio(Tablero* T, int nCasillas, int orient, int x, int y)
+void vaciarEspacio(Tablero* T, int nCasillas, int orient, int x, int y);
 
 /*P: Tablero T creado
 Q: Devuelve 1 si la casilla x,y está libre (' ') y 0 si está ocupada
@@ -67,7 +68,7 @@ int verificarEspacio(Tablero * T, Barco B, int orientacion, int x, int y);
 /*P: Tablero T creado
 Q: Devuelve por referencia las primeras coordenadas libres A PARTIR de las coordenadas x,y iniciales.
 Si no hubiera devuelve [-1,-1]*/
-void devolverCoordenadasLibres(Tablero* T, int x, int y)
+void devolverCoordenadasLibres(Tablero* T, int x, int y);
 
 
 /*UTILIZAR SOLO PARA OPERACIONES FUERA DEL JUEGO -> registrarDisparo()
