@@ -26,4 +26,11 @@ void disparo(Jugador *j, Tablero *t);
 //Postcondición: Modifica el resultado en el tablero.
 void resultado_disparo(int i, int j, Tablero *t);
 
+//Pre: Ninguna
+//Post: Función por defecto que inicia el juego, prepara los tableros, carga los archivos y carga la configuración en la partida.
+void iniciarPartida();
+
+
+
+
 #endif //LOGICA_H

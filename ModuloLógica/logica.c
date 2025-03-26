@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h> //sleep(tiempo)
-#include "Datos.h"
-#include "Tablero.h"
+#include "..\\ModuloMemoria\Datos.h"
+#include "..\\ModuloTablero\Tablero.h"
 
 void disparo(Jugador *j,Tablero *t){
 
@@ -27,7 +27,7 @@ void disparo(Jugador *j,Tablero *t){
         
         //j: Jugador que ejecuta el disparo, 1: tablero del oponente, x y: coords
 
-            if (devolverCasilla(j,1,x,y)=='identificador de barco'){//Caso de que haya tocado un barco
+            if (devolverCasilla(j,1,x,y)=='X'){//Caso de que haya tocado un barco
 
 
 
@@ -42,8 +42,12 @@ void disparo(Jugador *j,Tablero *t){
                 printf(" | |  __  |/ _` / __| |  _/ _` | | |/ _` |/ _` |/ _ \\| |\n");
                 printf(" | | |  | | (_| \\__ \\ | || (_| | | | (_| | (_| | (_) |_|\n");
                 printf(" |_|_|  |_|\\__,_|___/ |_| \\__,_|_|_|\\__,_|\\__,_|\\___/(_)\n");
+                printf("Has tocado agua.\n");
                 sleep(3);
-                //Mostrar tablero
+                
+                mostrarOponente(j);
+                //Limpiar terminal y cambiar de turno
+
             }
 
         (j->Num_disparos)++;
@@ -63,3 +67,13 @@ void disparo(Jugador *j,Tablero *t){
     }
 }
 
+
+void iniciarPartida(){
+
+ConfiguracionJuego ConfiguracionJuego_L = cargar_config();
+Vector_Barcos Vector_Barcos_L = cargar_barcos();
+
+
+
+
+}

@@ -8,7 +8,7 @@ void MenuPrincipal() {
 
     // Mensaje de bienvenida (se muestra solo al iniciar el juego)
     printf("\n========================================\n");
-    printf("       ¡BIENVENIDO A HUNDIR LA FLOTA!\n");
+    printf("       Â¡BIENVENIDO A HUNDIR LA FLOTA!\n");
     printf("========================================\n");
 
     do {
@@ -30,7 +30,7 @@ void MenuPrincipal() {
                 printf("Saliendo del juego...\n");
                 break;
             default:
-                printf("Opción no valida. Intente de nuevo.\n");
+                printf("Opciï¿½n no valida. Intente de nuevo.\n");
         }
     } while (opcion != 3);
 }
