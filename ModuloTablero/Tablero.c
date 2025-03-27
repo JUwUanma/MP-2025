@@ -6,6 +6,7 @@ static void mostrarTablero(Tablero* t);
 static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes);
 static void compactarVector(Vector_Barcos* vect, int barcoSeleccionado, int nBarcos);
 static int colocacionBarco(Barco* B, Jugador* j);
+static int colocarBarco(Tablero* T, Barco* B, int x, int y, int orient);
 
 inline static void jump(int j){for(int i=0; i<j; i++) printf("\n");}
 //Devuelve 1 si se ha respondido N o n, y 0 sino.
@@ -77,6 +78,39 @@ static void mostrarTablero(Tablero* t)
             }
         }
         printf("\n");
+    }
+}
+
+//P: Barco VERIFICADO
+static int colocarBarco(Tablero* T, Barco* B, int x, int y, int orient)
+{
+    int tamBarco = B->Tam_barco;
+    int flagValidPosition;
+
+    //Se coloca cada casilla hasta completar el barco
+    for(int i = 0; i < tamBarco; i++){
+        colocarCasilla('X', T, x, y); //Se coloca X en [x,y]
+        colocarAdyacentes(T, x, y, 'X', '0'); //Coloca los adyacentes '0'
+        moverAOrientacion(orient, x, y); //Se mueve a la siguiente casilla
+    }
+}
+
+void colocarAdyacentes(Tablero* T, int x, int y, char charToIgnore, char charToPlace)
+{
+    int xIni = x; int yIni= y;
+
+    for(int i = G0; i < G315 + 1; i++){
+        moverAOrientacion(i, x, y);
+
+        //Si está dentro del tablero
+        if(x >= 0 && x < T->maxLado && y >=0 && y < T->maxLado){ 
+            //Si no es el caracter a ignorar se coloca
+            if(!devolverCasilla(T, x, y) == charToIgnore){
+                colocarCasilla(charToPlace, T, x, y);
+            }
+        }
+        rotar(i, G45, IZQUIERDA); //Sentido antihorario
+        x = xIni; y = yIni;
     }
 }
 
@@ -159,7 +193,7 @@ static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes)
     }
 }
 
-
+//TODO: REFACTORIZAR COLOCAR EL BARCO, PINTAR ADYACENTES, 
 //Devuelve 1 si se ha colocado el barco B, devuelve 0 si se ha salido del menú o se han acabado los intentos.
 static int colocacionBarco(Barco* B, Jugador* j)
 {
@@ -207,7 +241,7 @@ static int colocacionBarco(Barco* B, Jugador* j)
 
                 //Coloca las casillas de vista previa SÓLO SI SON CASILLAS COMPLETAMENTE VACÍAS
                 rellenarCasillas(&j->Tablero_flota, 176, B->Tam_barco , orient, x, y);
-                colocarCasilla(178, j, FLOTA, x, y);
+                colocarCasilla(178, &j->Tablero_flota, x, y);
 
                 //MUESTRA LA FLOTA CON LA VISTA PREVIA YA COLOCADA
                 mostrarFlota(j);
@@ -229,8 +263,7 @@ static int colocacionBarco(Barco* B, Jugador* j)
                     //Si es enter, se coloca
                     case '\n':
                         flagPlaced = true;
-                        rellenarCasillas(&j->Tablero_flota, B->Tam_barco + 48, B->Tam_barco, orient, x, y);
-                        //REGISTRAR POSICIÓN Y DIRECCIÓN BARCO??
+                        colocarBarco(&j->Tablero_flota, B, x, y, orient);
                     break;
 
                     case 'A':
@@ -302,13 +335,17 @@ void rellenarCasillas(Tablero* T, char c, int nCasillas, int orient, int x, int 
     }
 }
 
+inline int verificarCasilla(Tablero* T, int x, int y) 
+{return (T->casillas[x][y] == ' ') && (x < 0 || x >= T->maxLado) && (y < 0 || y >= T->maxLado); }
+
+
 int verificarEspacio(Tablero* T, Barco* B, int orientacion, int x, int y)
 {
     int tamBarco = B->Tam_barco;
     int flagValid = true;
 
     while(tamBarco != 0 && flagValid){
-        if(!isLibre(T, x, y)) flagValid = false;
+        if(!verificarCasilla(T, x, y)) flagValid = false;
         moverAOrientacion(orientacion, &x, &y);
         tamBarco--;
     }
@@ -329,8 +366,6 @@ void devolverCoordenadasLibres(Tablero* T, int* x, int* y)
     }
 }
 
-inline int isLibre(Tablero* T, int x, int y){return T->casillas[x][y] == ' ';}
-
 static void compactarVector(Vector_Barcos* vect, int barcoSeleccionado, int nBarcos)
 {
     int barcosAMover = (nBarcos - 1) - barcoSeleccionado;
@@ -343,15 +378,14 @@ static void compactarVector(Vector_Barcos* vect, int barcoSeleccionado, int nBar
 }
 
 
-void colocarAleatorio(Jugador* j, Vector_Barcos* vect)
+int colocarAleatorio(Jugador* j, Vector_Barcos* vect)
 {
     srand(time(NULL));
     int x, xIni, yIni, y, orient;
-    int i = 0;
-    int flagErrorColocacion = false;
     int flagColocado = false;
     int nBarcos = vect->tam;
     int tamTableroMax = j->Tablero_flota.maxLado;
+    int cont = 0; //Contador Anti-bloqueo
 
     //Mientras haya barcos, los coloca
     while(nBarcos){
@@ -361,21 +395,17 @@ void colocarAleatorio(Jugador* j, Vector_Barcos* vect)
             xIni = x = 0 + rand() % tamTableroMax;
             yIni = y = 0 + rand() % tamTableroMax;
             orient = 0 + rand() % (G315 + 1); //Orientación entre 0 y 7
-            
-            flagErrorColocacion = false;
-            //Mientras no se verifique entero, no haya error de colocación y x e y estén dentro del tablero
-            //Se colocan desde el final hasta el principio
-            if(!verificarEspacio(&j->Tablero_flota, &vect->Barcos[nBarcos-1], orient, x, y)) flagErrorColocacion = true;
-
-            if(!flagErrorColocacion){
-                i = 0;
+            cont++; 
+            //Si se han hecho demasiados intentos para O REINICIA el programa.
+            if(cont > MAX_RANDOM_TRIES){
+                //REINICIAR TABLERO?
+                printf("\nError de colocación. Demasiados intentos\n", stderr);
+                return 0;
+            }
+            //Se verifica, si cabe, se coloca, sino, se sigue ejecutando hasta que se coloque -> flagColocado = true;
+            if(verificarEspacio(&j->Tablero_flota, &vect->Barcos[nBarcos-1], orient, x, y)){
                 x = xIni; y = yIni;
-                while(i != vect->Barcos[nBarcos-1].Tam_barco){
-                    i++;
-                    //Se coloca cómo casilla el tamaño del barco en carácter.
-                    colocarCasilla(vect->Barcos[nBarcos-1].Tam_barco + 48, j, FLOTA, x, y);
-                    moverAOrientacion(orient, &x, &y);
-                }
+                colocarBarco(&j->Tablero_flota, &vect->Barcos[nBarcos-1], x, y, orient);
                 nBarcos--;
                 flagColocado = true;
             }
@@ -383,6 +413,7 @@ void colocarAleatorio(Jugador* j, Vector_Barcos* vect)
     }
 
     mostrarFlota(j);
+    return 1; //Colocado correctamente
 }
 
 void moverAOrientacion(int orientacion, int* x, int* y)
@@ -438,13 +469,7 @@ void rotar(int* orientBase, int grados, int direccion)
     
 }
 
-inline char devolverCasilla(Jugador* j, int tablero, int x, int y) {return (tablero)? j->Tablero_oponente.casillas[x][y] : j->Tablero_flota.casillas[x][y];}
+inline char devolverCasilla(Tablero* T, int x, int y) { T->casillas[x][y];}
 
-inline void colocarCasilla(char c, Jugador* j, int tablero, int x, int y){
-    if(tablero){
-        j->Tablero_oponente.casillas[x][y] = c;
-    }else{
-        j->Tablero_flota.casillas[x][y] = c;
-    }
-}
+inline void colocarCasilla(char c, Tablero* T, int x, int y){T->casillas[x][y] = c;}
 
