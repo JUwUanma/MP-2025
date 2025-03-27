@@ -27,9 +27,14 @@ void disparo(Jugador *j, Tablero *t);
 void resultado_disparo(int i, int j, Tablero *t);
 
 //Pre: Ninguna
-//Post: Función por defecto que inicia el juego, prepara los tableros, carga los archivos y carga la configuración en la partida.
-void iniciarPartida();
+//Post: Función por defecto que reinicia el juego, prepara los tableros, carga los archivos y carga la configuración en la partida.
+void reiniciarPartida();
 
+
+
+void recorrer_barco();
+
+//Nota el disparo automático no es tonto, va a disparar alrededor de su disparo si da en un barco
 
 
 

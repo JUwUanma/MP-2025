@@ -68,12 +68,28 @@ void disparo(Jugador *j,Tablero *t){
 }
 
 
-void iniciarPartida(){
+void reiniciarPartida(){
+
 
 ConfiguracionJuego ConfiguracionJuego_L = cargar_config();
 Vector_Barcos Vector_Barcos_L = cargar_barcos();
 
+int dim = ConfiguracionJuego_L.Tama_tablero;
+crearTablero(dim);
+
+char eleccion_barco;
+//Elección de colocar barcos
+do{
+
+printf("Introduce un carácter para elegir modo de colocación de barcos\n");
+printf("'M' == Manual    'A' == Automático");
+
+scanf("%c",&eleccion_barco);
 
 
+
+}while(eleccion_barco!='M'||eleccion_barco!='A');
 
 }
+
+
