@@ -31,11 +31,25 @@ void resultado_disparo(int i, int j, Tablero *t);
 void reiniciarPartida();
 
 
+/*Precondición: Recibe un puntero a estructura de un jugador, el vector de barcos cargado y la elección del jugador
+Postcondición: Ejecuta la acción de colocar barcos en función del modo escogido*/
+void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco);
+
+
+void turno();
 
 void recorrer_barco();
+
+
+
+
 
 //Nota el disparo automático no es tonto, va a disparar alrededor de su disparo si da en un barco
 
 
+/*Precondición: Recibe la estructura de la configuración ya cargada y un entero con el id del jugador
+Postcondición: Devuelve una estructura cargada con los datos del jugador especificado 
+*/
+Jugador cargar_jugador(ConfiguracionJuego config, int id);
 
 #endif //LOGICA_H
