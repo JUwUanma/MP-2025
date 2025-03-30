@@ -1,7 +1,5 @@
 #include "Tablero.h"
 
-//TODO: ESTRUCTURA DE POSICION DE BARCOS + ORIENTACION MATRIZ DE 3 COLUMNAS
-
 static void mostrarTablero(Tablero* t);
 static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes);
 static void compactarVector(Vector_Barcos* vect, int barcoSeleccionado, int nBarcos);
@@ -42,11 +40,16 @@ Tablero* crearTablero(int maxLado)
         }
     }
 
-    //Inicializar tablero a ' '
-    for(int i = 0 ; i < maxLado ; ++i)
-        for(int j = 0 ; j < maxLado ; ++j)
-            t->casillas[i][j] = ' ';
+    reiniciarTablero(t); //Inicializa a ' ' el tablero
+    return t;
 
+}
+
+void reiniciarTablero(Tablero* T)
+{
+    for(int i = 0 ; i < T->maxLado ; ++i)
+        for(int j = 0 ; j < T->maxLado ; ++j)
+            T->casillas[i][j] = ' ';
 }
 
 void mostrarFlota(Jugador* j)
@@ -147,7 +150,10 @@ void colocarManual(Jugador* j, Vector_Barcos vect)
     
     //Recoje la tecla pulsada
     scanf("%c", &charBuffer);
-    if(!respuesta(charBuffer)) return; //Si se responde N se sale;
+    if(!respuesta(charBuffer)) {
+        printf("\nSaliendo del programa...\n\n");
+        return;
+    } //Si se responde N se sale;
 
     while((barcoSelect = barcoSeleccionado(&vect, &nBarcosRestantes)) != -1 && flagColocado){
         flagColocado = colocacionBarco(&vect.Barcos[barcoSelect], j);
@@ -175,7 +181,10 @@ static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes)
         
         //Se registra la tecla. Si es N/n termina la selección.
         scanf("%c", &charBuffer);
-        if(charBuffer == 'N' || charBuffer == 'n') return 0;
+        if(charBuffer == 'N' || charBuffer == 'n'){
+            printf("\nSaliendo de la selección...\n\n");
+            return -1;
+        }
 
         //Si la tecla está entre los valores validos, se selecciona.
         if((int)charBuffer >= 0 && (int)charBuffer < nBarcosRestantes){
@@ -188,12 +197,12 @@ static int barcoSeleccionado(Vector_Barcos* vect, int* nBarcosRestantes)
             //Devuelve el id del barco
             return (int)charBuffer;
         }else 
-            return -1;
+            printf("\nTecla NO válida\n\n");
+            return barcoSeleccionado(vect, nBarcosRestantes);
 
     }
 }
 
-//TODO: REFACTORIZAR COLOCAR EL BARCO, PINTAR ADYACENTES, 
 //Devuelve 1 si se ha colocado el barco B, devuelve 0 si se ha salido del menú o se han acabado los intentos.
 static int colocacionBarco(Barco* B, Jugador* j)
 {
@@ -235,7 +244,7 @@ static int colocacionBarco(Barco* B, Jugador* j)
 
                 //Mensaje previo al tablero
                 jump(30);
-                printf("Pulsa las siguientes teclas para moverte por el tablero y cambiar la dirección del barco, [ENTER] para colocar, [R] para reiniciar posición, [N] para salir:\n\n");
+                printf("Pulsa las siguientes teclas para moverte por el tablero y cambiar la dirección del barco: [ENTER] para colocar, [R] para reiniciar posición, [N] para salir:\n\n");
                 printf("A: Moverte una casilla a la izq\nW: Moverte una casilla hacia arriba\nS: Moverte una casilla a la derecha\nD: Moverte una casilla hacia abajo\n\n");
                 printf("J: Girar 90 g. a la izquierda\nL: Girar 90 g. a la derecha\nI: Girar 45 g. a la izquierda\nK: Girar 45 g. a la derecha\n\n");
 
@@ -309,8 +318,10 @@ static int colocacionBarco(Barco* B, Jugador* j)
                     if(!verificarEspacio(&j->Tablero_flota, &B, orient, x, y)){
                         printf("\n\nPOSICIÓN NO VALIDA. Elija otra. [R] para reiniciar posicion. [N] para salir\n\n");
                         x = xIni; y = yIni; orient = orientIni;
-                        vaciarCasillas(&j->Tablero_flota, B->Tam_barco, orient, x, y);
+                    }else{
+                        vaciarCasillas(&j->Tablero_flota, B->Tam_barco, orientIni, xIni, yIni);
                     }
+    
                 }
 
             }while(!flagPlaced);
@@ -385,31 +396,32 @@ int colocarAleatorio(Jugador* j, Vector_Barcos* vect)
     int flagColocado = false;
     int nBarcos = vect->tam;
     int tamTableroMax = j->Tablero_flota.maxLado;
-    int cont = 0; //Contador Anti-bloqueo
+    int contStress = 0; //Contador Anti-bloqueo
 
     //Mientras haya barcos, los coloca
     while(nBarcos){
         flagColocado = false;
         //Mientras no se coloque elige una nueva coordenada y prueba
-        while(!flagColocado){
+        do{
             xIni = x = 0 + rand() % tamTableroMax;
             yIni = y = 0 + rand() % tamTableroMax;
             orient = 0 + rand() % (G315 + 1); //Orientación entre 0 y 7
-            cont++; 
-            //Si se han hecho demasiados intentos para O REINICIA el programa.
-            if(cont > MAX_RANDOM_TRIES){
-                //REINICIAR TABLERO?
-                printf("\nError de colocación. Demasiados intentos\n", stderr);
-                return 0;
-            }
-            //Se verifica, si cabe, se coloca, sino, se sigue ejecutando hasta que se coloque -> flagColocado = true;
+            contStress++; 
+
+            //Se verifica, si cabe se coloca, sino, se sigue ejecutando hasta que se coloque -> flagColocado = true;
             if(verificarEspacio(&j->Tablero_flota, &vect->Barcos[nBarcos-1], orient, x, y)){
                 x = xIni; y = yIni;
                 colocarBarco(&j->Tablero_flota, &vect->Barcos[nBarcos-1], x, y, orient);
                 nBarcos--;
                 flagColocado = true;
+
+            }elif(contStress > MAX_RANDOM_TRIES);{//Si se han hecho demasiados intentos para O REINICIA el programa.
+                reiniciarTablero(&j->Tablero_flota);
+                printf("\nError de colocación. Demasiados intentos. Reiniciando tablero...\n", stderr);
+                return colocarAleatorio(j, vect);
             }
-        }
+            
+        }while(!flagColocado);
     }
 
     mostrarFlota(j);
