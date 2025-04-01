@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h> //sleep(tiempo)
+#include "logica.h"
 #include "..\\ModuloMemoria\Datos.h"
 #include "..\\ModuloTablero\Tablero.h"
 
@@ -17,15 +18,18 @@ void disparo(Jugador *j,Tablero *t){
         puts("Introduce unas coordenadas (X,Y) para disparar.");
         scanf("%i %i",&x, &y);
         
-        if(0<x<=(t->maxLado)&&0<y<=(t->maxLado)){
-
-            coordsCorrectas=1;
+        if(x > 0 && x <= t->maxLado && y > 0 && y <= t->maxLado) {
+            //Verificar que la casilla no haya sido disparada antes
+            if(t->casillas[x-1][y-1] == ' ') { //Resta 1 porque los vectores empiezan en 0
+                coordsCorrectas = 1;
+            } else {
+                printf("Ya has disparado a esta posición (%d,%d). Intenta otra.\n", x, y);
+            }
+        } else {
+            puts("Coordenadas no válidas. Deben estar dentro del rango del tablero.");
         }
-        else{puts("Coordenadas no válidas");}
         
-        }while(coordsCorrectas!=1&&isLibre(t,x,y));//nota para el futuro: mostrar mensaje según contenido de la casilla
-        
-        //j: Jugador que ejecuta el disparo, 1: tablero del oponente, x y: coords
+        }while(coordsCorrectas!=1);
 
             if (devolverCasilla(t,x,y)=='X'){//Caso de que haya tocado un barco
 
@@ -37,7 +41,7 @@ void disparo(Jugador *j,Tablero *t){
             }
             else{
                 
-                colocarCasilla('*', j, x, y);
+                colocarCasilla('*', t, x, y);
                 printf("  _ _    _              __      _ _           _       _ \n");
                 printf(" (_) |  | |            / _|    | | |         | |     | |\n");
                 printf(" | | |__| | __ _ ___  | |_ __ _| | | __ _  __| | ___ | |\n");
@@ -75,15 +79,18 @@ void reiniciarPartida(){
 
 ConfiguracionJuego ConfiguracionJuego_L = cargar_config();
 int dim = ConfiguracionJuego_L.Tama_tablero;
+//Se crea el tablero del tamaño especificado en la configuración
 crearTablero(dim);
 Vector_Barcos Vector_Barcos_L = cargar_barcos();
-Jugador j1, j2;
-
-j1 = cargar_jugador(ConfiguracionJuego_L, 1);
-j2 = cargar_jugador(ConfiguracionJuego_L, 2);
-
+//Estructuras de los jugadores
+Jugador j1;
+Jugador j2;
+//Punteros a las estructuras
 Jugador *pj1= &j1;
 Jugador *pj2= &j2;
+
+cargar_jugador(pj1, ConfiguracionJuego_L, 1);
+cargar_jugador(pj2, ConfiguracionJuego_L, 2);
 
 char eleccion_barco_j1, eleccion_barco_j2;
 //Elección de colocar barcos
@@ -91,20 +98,14 @@ char eleccion_barco_j1, eleccion_barco_j2;
     f_eleccion_barcos(pj1,Vector_Barcos_L,eleccion_barco_j1);
     f_eleccion_barcos(pj2,Vector_Barcos_L,eleccion_barco_j2);
     
-    //turno
+    //turno(j1);
 
 }
 
 
 void turno(){
 
-
-
-
-
-
-
-
+    //puts("Es el turno de %s", );
 
 }
 
@@ -136,27 +137,26 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
 }
 
 
-Jugador cargar_jugador(ConfiguracionJuego config, int id){
+void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id){
+
+    j->Id_jugador = id;
 
 
-    Jugador jugador;
-    jugador.Id_jugador = id;
-
-    id = 1 ? strcpy (jugador.Nomb_jugador,config.Nomb_J1) : strcpy (jugador.Nomb_jugador,config.Nomb_J2);  
-
-    id = 1 ? (jugador.Tipo_disparo=config.Tipo_disparo_J1) : (jugador.Tipo_disparo=config.Tipo_disparo_J1);  
+    if (id == 1){
+        
+        strcpy(j->Nomb_jugador,config.Nomb_J1);
+        j->Tipo_disparo=config.Tipo_disparo_J1;
+        j->Tablero_flota = config.Tablero_flota1;
+        j->Tablero_oponente = config.Tablero_oponente1;
     
-    if(id=1){
-
-        jugador.Tablero_flota = config.Tablero_flota1;
-        jugador.Tablero_oponente = config.Tablero_oponente1;
-
     }
     else{
-
-        jugador.Tablero_flota = config.Tablero_flota2;
-        jugador.Tablero_oponente = config.Tablero_oponente1;
-
+        
+        strcpy (j->Nomb_jugador,config.Nomb_J2);
+        j->Tipo_disparo=config.Tipo_disparo_J2;
+        j->Tablero_flota = config.Tablero_flota2;
+        j->Tablero_oponente = config.Tablero_oponente2;
+    
     }
-    return jugador;
+     
 }

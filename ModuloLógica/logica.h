@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Datos.h"
-#include "Tablero.h"
+#include "..\\ModuloMemoria\Datos.h"
+#include "..\\ModuloTablero\Tablero.h"
 
 //Funciones:
 
@@ -50,6 +50,7 @@ void recorrer_barco();
 /*Precondición: Recibe la estructura de la configuración ya cargada y un entero con el id del jugador
 Postcondición: Devuelve una estructura cargada con los datos del jugador especificado 
 */
-Jugador cargar_jugador(ConfiguracionJuego config, int id);
+
+void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id);
 
 #endif //LOGICA_H
