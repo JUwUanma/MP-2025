@@ -6,6 +6,9 @@
 #include "..\\ModuloMemoria\Datos.h"
 #include "..\\ModuloTablero\Tablero.h"
 
+
+enum TIPO_DISPARO {AGUA, TOCADO, HUNDIDO};
+
 //Funciones:
 
 
@@ -18,13 +21,18 @@
 //              de lo contrario, el usuario introduce las coordenadas.
 //NOTA: Esta función puede cambiar, es decir, puede ser modificada de manera que haga los cambios y muestre
 //      los resultados en pantalla, eliminando la siguiente función a esta y añadiendo sus argumentos. 
-void disparo(Jugador *j, Tablero *t);
 
+typedef struct{
+    int x_maq, y_maq; 
+    int orient_maq;
+    int flagEncontrado_maq;
+}Registro_Maquina;
 
-
+void disparo_menu(Jugador *j, Tablero *t, Registro_Maquina *reg_maq);
+void disparo_aleatorio(Tablero *t, Registro_Maquina *reg_maq);
 //Precondición: Recibe las coordenadas del disparo, el puntero a estructura Tablero[Del módulo de tu mama]
 //Postcondición: Modifica el resultado en el tablero.
-void resultado_disparo(int i, int j, Tablero *t);
+//void resultado_disparo(int i, int j, Tablero *t);
 
 //Pre: Ninguna
 //Post: Función por defecto que reinicia el juego, prepara los tableros, carga los archivos y carga la configuración en la partida.
@@ -36,7 +44,11 @@ Postcondición: Ejecuta la acción de colocar barcos en función del modo escogi
 void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco);
 
 
-void turno();
+void turno(Jugador *j, int *opcion_salir, Registro_Maquina *reg_maq);
+
+
+void salir_partida();
+
 
 void recorrer_barco();
 
