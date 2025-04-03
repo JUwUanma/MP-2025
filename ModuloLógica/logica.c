@@ -7,6 +7,99 @@
 #include "..\\ModuloTablero\Tablero.h"
 #include "..\\ModuloInterfaz\Interfaz.h"
 
+void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
+{
+    int resDisparo;
+    int xAux = reg.x_maq;
+    int yAux = reg.y_maq;
+    int orientAux = reg.orient_maq;
+    int flagValidPosition = false;
+    //¿Se ha encontrado un barco?
+    if(!reg.flagEncontrado){
+        //No se ha encontrado --> Disparo aleatorio
+
+        //Elige una posición aleatoria del tablero
+        do{
+            reg.x_maq = 0 + rand() % T.maxLado;
+            reg.y_maq = 0 + rand() % T.maxLado;
+        }while(devolverCasilla(T, reg.x_maq, reg.y_maq) != ' ');
+        //¿Es vacía?
+
+        //Dispara en la casilla elegida. ¿Ha sido agua?
+        if((resDisparo = disparo(T, reg.x_maq, reg.y_maq) != AGUA))
+            reg.flagEncontrado = reg.flagEncontrado == 2 ? false : true;
+            //¿Lo ha hundido?
+        
+    }else{
+        //Se ha encontrado --> ¿Se sabe la dirección?
+
+        //¿Se ha encontrado la orientación del barco?
+        if(reg.orient_maq == -1){
+            //No se ha encontrado la orientación del barco
+
+            //Rota la orientación a una aleatoria
+            do{
+               orientAux = G0 + rand() % (G315 + 1);
+               moverAOrientacion(orientAux, &xAux, &yAux);
+                
+               //¿Es agua?
+                if(devolverCasilla(T, reg.x_maq, reg.y_maq) != '*') 
+                    flagValidPosition = true;
+                else{
+                    orientAux = reg.orient_maq;
+                    xAux = reg.x_maq; yAux = reg.y_maq;
+                }
+            }while(!flagValidPosition);
+            
+            reg.orient_maq = orientAux;
+
+            //Dispara en la casilla elegida
+            //¿Ha sido agua?
+            if(resDisparo = disparo(T, reg.x_maq, reg.y_maq)){
+                //No ha sido agua
+
+                //¿Lo ha hundido?
+                if(resDisparo == 2) reg.flagEncontrado = false;
+        
+            }else{
+                //Si ha sido agua, no es esa orientación
+                reg.orient_maq = -1;
+            }
+
+
+        }else{
+            //Se ha encontrado la orientación del barco
+            moverAOrientacion(reg.orient_maq, &reg.x_maq, &reg.y_maq);
+
+            //¿Ha sido agua?
+            if(resDisparo = disparo(T, reg.x_maq, reg.y_maq)){
+                //No ha sido agua
+
+                //¿Lo ha hundido?
+                if(resDisparo == 2) reg.flagEncontrado = false;
+            }else{
+                //Si ha sido agua
+                rotar(&orientAux, G180, DERECHA); //Indistinto derecha o izquierda
+                do{
+                    moverAOrientacion(orientAux, &xAux, &yAux);
+                    if(devolverCasilla(T, xAux, yAux) != ' '){
+                        flagValidPosition = true;
+                    }
+                }while(!flagValidPosition); //Técnicamente no es necesario aquí las variables aux
+
+                moverAOrientacion(reg.orient_maq, &xAux, &yAux);
+                reg.x_maq = xAux;
+                reg.y_maq = yAux;
+                reg.orient_maq = orientAux;
+                //Se preparan las coordenadas para que la próxima iteración dispare al barco
+            }
+        
+            
+        }
+    }
+}
+
+
 void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
 
     int x=0, y=0;
