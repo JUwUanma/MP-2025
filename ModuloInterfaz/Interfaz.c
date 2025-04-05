@@ -1,112 +1,137 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <conio.h>
 #include "Interfaz.h"
-#include "Datos.h"
+
+void limpiarPantalla() {
+    system("cls");
+}
+//permite navegar por el men� al usuario utilizando las flechas del teclado
+int navegarMenu(const char *opciones[], int numOpciones) {
+    int seleccion = 0;
+    int tecla;
+
+    while (1) {
+        limpiarPantalla();
+        printf("\n=== MENU ===\n");
+
+        for (int i = 0; i < numOpciones; i++) {
+            if (i == seleccion) {
+                printf("> %s <\n", opciones[i]);
+            } else {
+                printf("  %s\n", opciones[i]);
+            }
+        }
+
+        tecla = getch();
+        if (tecla == 224) {
+            tecla = getch();
+            if (tecla == 72 && seleccion > 0) { // Flecha arriba
+                seleccion--;
+            } else if (tecla == 80 && seleccion < numOpciones - 1) { // Flecha abajo
+                seleccion++;
+            }
+        } else if (tecla == 13) { // ENTER
+            return seleccion;
+        }
+    }
+}
 
 void MenuPrincipal() {
-    int opcion;
+        // Mensaje de bienvenida (se muestra solo al iniciar el juego)
 
-    // Mensaje de bienvenida (se muestra solo al iniciar el juego)
-    printf("\n========================================\n");
-    printf("       ¡BIENVENIDO A HUNDIR LA FLOTA!\n");
-    printf("========================================\n");
+    printf("+==============================================================+\n");
+    printf("|   ____ ___ _____ _   ___     _______ _   _ ___ ____   ___    |\n");
+    printf("|  | __ )_ _| ____| \ | \ \   / / ____| \ | |_ _|  _ \ / _ \   |\n");
+    printf("|  |  _ \| ||  _| |  \| |\ \ / /|  _| |  \| || || | | | | | |  |\n");
+    printf("|  | |_) | || |___| |\  | \ V / | |___| |\  || || |_| | |_| |  |\n");
+    printf("|  |____/___|_____|_| \_|  \_/  |_____|_| \_|___|____/ \___/   |\n");
+    printf("|                           / \                                |\n");
+    printf("|                          / _ \                               |\n");
+    printf("|                         / ___ \                              |\n");
+    printf("|       _   _ _   _ _   _/_/__ \_\ ____    _        _          |\n");
+    printf("|      | | | | | | | \ | |  _ \_ _|  _ \  | |      / \         |\n");
+    printf("|      | |_| | | | |  \| | | | | || |_) | | |     / _ \        |\n");
+    printf("|      |  _  | |_| | |\  | |_| | ||  _ <  | |___ / ___ \       |\n");
+    printf("|      |_| |_|\___/|_|_\_|____/___|_| \_\ |_____/_/   \_\      |\n");
+    printf("|              |  ___| |   / _ \_   _|/ \                      |\n");
+    printf("|              | |_  | |  | | | || | / _ \                     |\n");
+    printf("|              |  _| | |__| |_| || |/ ___ \                    |\n");
+    printf("|              |_|   |_____\___/ |_/_/   \_\                   |\n");
+    printf("+==============================================================+\n");
 
-    do {
-        printf("\n=== MENU PRINCIPAL ===\n");
-        printf("1. Configuracion\n");
-        printf("2. Jugar\n");
-        printf("3. Salir\n\n");
-        printf("Seleccione una opcion: ");
-        scanf("%d", &opcion);
 
-        switch (opcion) {
-            case 1:
+    const char *opciones[] = {"Configuracion", "Jugar", "Salir"}; //vector de punteros a cadena de caracteres
+    int seleccion;
+
+    while (1) {
+        seleccion = navegarMenu(opciones, 3);
+
+        switch (seleccion) {
+            case 0:
                 MenuConfiguracion();
                 break;
-            case 2:
+            case 1:
                 MenuJuego();
                 break;
-            case 3:
+            case 2:
+                limpiarPantalla();
                 printf("Saliendo del juego...\n");
-                break;
-            default:
-                printf("Opci�n no valida. Intente de nuevo.\n");
+                return;
         }
-    } while (opcion != 3);
+    }
 }
 
 void MenuConfiguracion() {
-    int opcion;
-    ConfiguracionJuego config;
+    const char *opciones[] = {"Introducir datos", "Mostrar", "Borrar", "Guardar", "Cargar", "Volver"};
+    int seleccion;
 
-    do {
-        printf("\n=== CONFIGURACION ===\n");
-        printf("1. Introducir datos\n");
-        printf("2. Mostrar\n");
-        printf("3. Borrar\n");
-        printf("4. Guardar\n");
-        printf("5. Cargar\n");
-        printf("6. Volver\n\n");
-        printf("Seleccione una opcion: ");
-        scanf("%d", &opcion);
+    while (1) {
+        seleccion = navegarMenu(opciones, 6);
 
-        switch (opcion) {
-            case 1:
+        switch (seleccion) {
+            case 0:
                 printf("Funcion introducir datos.\n");
-                modificar_config(&config);
+                break;
+            case 1:
+                printf("Mostrando configuracion.\n");
                 break;
             case 2:
-                printf("Mostrando configuracion:\n");
-                mostrar_configuracion(config);
+                printf("Borrando configuracion...\n");
                 break;
             case 3:
-                printf("Borrando configuracion...\n");
-                free(config.Tipo_barcos);
-                free(config.num_barcos);
+                printf("Guardando configuracion...\n");
                 break;
             case 4:
-                printf("Guardando configuracion...\n");
-                guardar_config(config);
+                printf("Cargando configuracion...\n");
                 break;
             case 5:
-                printf("Cargando configuracion...\n");
-                config = cargar_config();
-                break;
-            case 6:
-                printf("Regresando al menu principal...\n");
-                break;
-            default:
-                printf("Opcion no valida. Intente de nuevo.\n");
+                return;
         }
-    } while (opcion != 6);
+        system("pause");
+    }
 }
 
 void MenuJuego() {
-    int opcion;
-    do {
-        printf("\n=== JUGAR PARTIDA ===\n");
-        printf("1. Jugar partida\n");
-        printf("2. Reiniciar partida\n");
-        printf("3. Resumen\n");
-        printf("4. Volver\n");
-        printf("Seleccione una opcion: ");
-        scanf("%d", &opcion);
+    const char *opciones[] = {"Jugar partida", "Reiniciar partida", "Resumen", "Volver"};
+    int seleccion;
 
-        switch (opcion) {
-            case 1:
+    while (1) {
+        seleccion = navegarMenu(opciones, 4);
+
+        switch (seleccion) {
+            case 0:
                 printf("Funcion Jugar partida.\n");
                 break;
-            case 2:
+            case 1:
                 printf("Funcion Reiniciar partida.\n");
                 break;
-            case 3:
+            case 2:
                 printf("Funcion Mostrar resumen.\n");
                 break;
-            case 4:
-                printf("Regresando al menu principal...\n");
-                break;
-            default:
-                printf("Opcion no valida. Intente de nuevo.\n");
+            case 3:
+                return;
         }
-    } while (opcion != 4);
+        system("pause");
+    }
 }

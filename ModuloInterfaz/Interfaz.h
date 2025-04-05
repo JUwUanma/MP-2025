@@ -1,21 +1,25 @@
 #ifndef INTERFAZ_H_INCLUDED
 #define INTERFAZ_H_INCLUDED
-
 /*
-   Precondición: N/A
-   Postcondición: El usuario selecciona una opción y se dirige al menú correspondiente.
+   Precodiciï¿½n: N/A
+   Postcondiciï¿½n: Se limpia la pantalla
+*/
+void limpiarPantalla();
+/*
+   Precondiciï¿½n: N/A
+   Postcondiciï¿½n: El usuario selecciona una opciï¿½n y se dirige al menï¿½ correspondiente.
  */
 void MenuPrincipal();
 
 /*
-   Precondición: N/A.
-   Postcondición: Permite configurar los parámetros del juego o volver al menú principal.
+   Precondiciï¿½n: N/A.
+   Postcondiciï¿½n: Permite configurar los parï¿½metros del juego o volver al menï¿½ principal.
  */
 void MenuConfiguracion();
 
 /*
-   Precondición: La configuración debe estar completa para jugar.
-   Postcondición: Permite iniciar, reiniciar o ver un resumen de la partida.
+   Precondiciï¿½n: La configuraciï¿½n debe estar completa para jugar.
+   Postcondiciï¿½n: Permite iniciar, reiniciar o ver un resumen de la partida.
  */
 void MenuJuego();
 
