@@ -23,5 +23,4 @@ void MenuConfiguracion();
  */
 void MenuJuego();
 
-
 #endif // INTERFAZ_H_INCLUDED
