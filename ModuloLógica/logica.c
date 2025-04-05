@@ -10,31 +10,31 @@
 void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
 {
     int resDisparo;
-    int xAux = reg.x_maq;
-    int yAux = reg.y_maq;
-    int orientAux = reg.orient_maq;
+    int xAux = reg->x_maq;
+    int yAux = reg->y_maq;
+    int orientAux = reg->orient_maq;
     int flagValidPosition = false;
     //¿Se ha encontrado un barco?
-    if(!reg.flagEncontrado){
+    if(!reg->flagEncontrado_maq){
         //No se ha encontrado --> Disparo aleatorio
 
         //Elige una posición aleatoria del tablero
         do{
-            reg.x_maq = 0 + rand() % T.maxLado;
-            reg.y_maq = 0 + rand() % T.maxLado;
-        }while(devolverCasilla(T, reg.x_maq, reg.y_maq) != ' ');
+            reg->x_maq = 0 + rand() % T->maxLado;
+            reg->y_maq = 0 + rand() % T->maxLado;
+        }while(devolverCasilla(T, reg->x_maq, reg->y_maq) != ' ');
         //¿Es vacía?
 
         //Dispara en la casilla elegida. ¿Ha sido agua?
-        if((resDisparo = disparo(T, reg.x_maq, reg.y_maq) != AGUA))
-            reg.flagEncontrado = reg.flagEncontrado == 2 ? false : true;
+        if((resDisparo = disparo(T, reg->x_maq, reg->y_maq) != AGUA))
+            reg->flagEncontrado_maq = reg->flagEncontrado_maq == 2 ? false : true;
             //¿Lo ha hundido?
         
     }else{
         //Se ha encontrado --> ¿Se sabe la dirección?
 
         //¿Se ha encontrado la orientación del barco?
-        if(reg.orient_maq == -1){
+        if(reg->orient_maq == -1){
             //No se ha encontrado la orientación del barco
 
             //Rota la orientación a una aleatoria
@@ -43,40 +43,40 @@ void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
                moverAOrientacion(orientAux, &xAux, &yAux);
                 
                //¿Es agua?
-                if(devolverCasilla(T, reg.x_maq, reg.y_maq) != '*') 
+                if(devolverCasilla(T, reg->x_maq, reg->y_maq) != '*') 
                     flagValidPosition = true;
                 else{
-                    orientAux = reg.orient_maq;
-                    xAux = reg.x_maq; yAux = reg.y_maq;
+                    orientAux = reg->orient_maq;
+                    xAux = reg->x_maq; yAux = reg->y_maq;
                 }
             }while(!flagValidPosition);
             
-            reg.orient_maq = orientAux;
+            reg->orient_maq = orientAux;
 
             //Dispara en la casilla elegida
             //¿Ha sido agua?
-            if(resDisparo = disparo(T, reg.x_maq, reg.y_maq)){
+            if(resDisparo = disparo(T, reg->x_maq, reg->y_maq)){
                 //No ha sido agua
 
                 //¿Lo ha hundido?
-                if(resDisparo == 2) reg.flagEncontrado = false;
+                if(resDisparo == 2) reg->flagEncontrado_maq = false;
         
             }else{
                 //Si ha sido agua, no es esa orientación
-                reg.orient_maq = -1;
+                reg->orient_maq = -1;
             }
 
 
         }else{
             //Se ha encontrado la orientación del barco
-            moverAOrientacion(reg.orient_maq, &reg.x_maq, &reg.y_maq);
+            moverAOrientacion(reg->orient_maq, &reg->x_maq, &reg->y_maq);
 
             //¿Ha sido agua?
-            if(resDisparo = disparo(T, reg.x_maq, reg.y_maq)){
+            if(resDisparo = disparo(T, reg->x_maq, reg->y_maq)){
                 //No ha sido agua
 
                 //¿Lo ha hundido?
-                if(resDisparo == 2) reg.flagEncontrado = false;
+                if(resDisparo == 2) reg->flagEncontrado_maq = false;
             }else{
                 //Si ha sido agua
                 rotar(&orientAux, G180, DERECHA); //Indistinto derecha o izquierda
@@ -87,10 +87,10 @@ void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
                     }
                 }while(!flagValidPosition); //Técnicamente no es necesario aquí las variables aux
 
-                moverAOrientacion(reg.orient_maq, &xAux, &yAux);
-                reg.x_maq = xAux;
-                reg.y_maq = yAux;
-                reg.orient_maq = orientAux;
+                moverAOrientacion(reg->orient_maq, &xAux, &yAux);
+                reg->x_maq = xAux;
+                reg->y_maq = yAux;
+                reg->orient_maq = orientAux;
                 //Se preparan las coordenadas para que la próxima iteración dispare al barco
             }
         
@@ -100,46 +100,124 @@ void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
 }
 
 
-void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
-
+disparoManual(Tablero *t, Registro_Maquina *reg_maq){
+    //Inicializa coordenadas y si la coordenada es válida
     int x=0, y=0;
+    int flagValidPosition = false;
 
-    if(j->Tipo_disparo=='M'){
-        int coordsCorrectas=0;
-        
-        do{
+    do{
         
         puts("Introduce unas coordenadas (X,Y) para disparar.");
         scanf("%i %i",&x, &y);
         
-        if(x > 0 && x <= t->maxLado && y > 0 && y <= t->maxLado) {
+            if(x > 0 && x <= t->maxLado && y > 0 && y <= t->maxLado) {
             //Verificar que la casilla no haya sido disparada antes
-            if(t->casillas[x-1][y-1] == ' ') { //Resta 1 porque los vectores empiezan en 0
-                coordsCorrectas = 1;
-            } else {
-                printf("Ya has disparado a esta posición (%d,%d). Intenta otra.\n", x, y);
-            }
-        } else {
-            puts("Coordenadas no válidas. Deben estar dentro del rango del tablero.");
-        }
-        
-        }while(coordsCorrectas!=1);
+                if(t->casillas[x-1][y-1] == ' ') { //Resta 1 porque los vectores empiezan en 0
+                    flagValidPosition = 1;
+                } else {
 
-            if (devolverCasilla(t,x,y)=='X'){//Caso de que haya tocado un barco
+                    printf("Ya has disparado a esta posición (%d,%d). Intenta otra.\n", x, y);
+                
+                }
+            } else {
+                puts("Coordenadas no válidas. Deben estar dentro del rango del tablero.");
+            }
+        }while(flagValidPosition!=1);
+
+        //Guarda las coordenadas en el registro
+        reg_maq->x_maq=x;
+        reg_maq->y_maq=y;
+}
+
+
+
+void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
+
+    int x,y;
+
+    if(j->Tipo_disparo=='M'){
+        
+        disparoManual(t,reg_maq);
+        
+    }
+    else{ //Bloque de disparo automático
+
+            //do{
+            srand(time(NULL));              //Semilla generada a partir de la hora actual
+            //x=rand() % (t->maxLado + 1);       //Número aleatorio entre 0 y xMax
+            //y=rand() % (t->maxLado + 1);       //Igual pero con y
+            
+            //}while(t->casillas[x][y]!=' '); //t->casillas puede que lo cambie por otra función
+    
+            disparoAleatorio(t, reg_maq);
+    
+        }
+        //Recupera las coordenadas guardadas de otras funciones
+    x=reg_maq->x_maq;
+    y=reg_maq->y_maq;
+
+            if (devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)=='X'){//Caso de que haya tocado un barco
 
 
                 printf("Has acertado!!");
-                colocarCasilla('T', t, x, y);
-                // _ _____                   _       _ 
-                // (_)_   _|__   ___ __ _  __| | ___ | |
-                // | | | |/ _ \ / __/ _` |/ _` |/ _ \| |
-                // | | | | (_) | (_| (_| | (_| | (_) |_|
-                // |_| |_|\___/ \___\__,_|\__,_|\___/(_)
+
+                if (disparo(t,reg_maq->x_maq, reg_maq->y_maq)==1){//El barco solo está tocado
+                colocarCasilla('T', t, reg_maq->x_maq, reg_maq->y_maq);
+                    printf("_ _____                   _       _ \n");
+                    printf("(_)_   _|__   ___ __ _  __| | ___ | |\n");
+                    printf("| | | |/ _ \\ / __/ _` |/ _` |/ _ \\| |\n");
+                    printf("| | | | (_) | (_| (_| | (_| | (_) |_|\n");
+                    printf("|_| |_|\\___/ \\___\\__,_|\\__,_|\\___/(_)\n");
+                    printf("¡Has tocado un barco!\n");
+
                 sleep(3);
                 system("cls");
                 mostrarOponente(j);
+                }
+            
+            else{//Caso de que barco esté hundido
+                    
+                    //Recorrer barco hasta el inicio de este
+                    while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
+                    
+                    
+                        moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+
+
+                    }
+                    //Dar media vuelta para rellenar casillas
+                    int orient_op;//Variable para guardar la dirección opuesta
+                    if(reg_maq->orient_maq<=4){
+
+                        orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
+
+                    }else{
+
+                        orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
+
+                    }
+
+                    do{
+                    
+                        moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+
+                        if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*') //Doble seguridad para que no se rellenen casillas de más
+                        colocarAdyacentes(t, reg_maq->x_maq, reg_maq->y_maq, '*', 'H');
+                    
+                    }while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*');
+
+                system("cls");
+                printf("░█░█░█░█░█▀█░█▀▄░▀█▀░█▀▄░█▀█░█\n");
+                printf("░█▀█░█░█░█░█░█░█░░█░░█░█░█░█░▀\n");
+                printf("░▀░▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀▀░░▀▀▀░▀\n");
+                printf("¡Has hundido un barco!\n");
+                sleep(3);
+                system("cls");
+                mostrarOponente(j);
+
+                
             }
-            else{
+            }else{
                 
                 system("cls");
                 colocarCasilla('*', t, x, y);
@@ -154,23 +232,11 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 system("cls");
                 mostrarOponente(j);
 
-            }
+            
 
-        (j->Num_disparos)++;
+            (j->Num_disparos)++;
     }
-    else{ //Bloque de disparo automático
-
-        do{
-        srand(time(NULL));              //Semilla generada a partir de la hora actual
-        x=rand() % (t->maxLado + 1);       //Número aleatorio entre 0 y xMax
-        y=rand() % (t->maxLado + 1);       //Igual pero con y
-        
-        }while(t->casillas[x][y]!=' '); //t->casillas puede que lo cambie por otra función
-
-        disparo_aleatorio(t, reg_maq);
-
-        (j->Num_disparos)++;
-    }
+    
 }
 
 
@@ -199,7 +265,7 @@ reg_maquina.y_maq=0;
 Jugador j1;
 Jugador j2;
 
-int x_maq, y_maq; //
+int x_maq, y_maq; //nota: variables bien inicializadas?
 int orient_maq=-1;
 int flagEncontrado_maq=false;
 
@@ -291,7 +357,7 @@ void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id){
     j->Id_jugador = id;
 
 
-    if (id == 1){
+    if (id == 1){//Copia los datos de J1 en la estructura de J1
         
         strcpy(j->Nomb_jugador,config.Nomb_J1);
         j->Tipo_disparo=config.Tipo_disparo_J1;
@@ -299,7 +365,7 @@ void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id){
         j->Tablero_oponente = config.Tablero_oponente1;
     
     }
-    else{
+    else{//Copia los datos de J2 en la estructura de J2
         
         strcpy (j->Nomb_jugador,config.Nomb_J2);
         j->Tipo_disparo=config.Tipo_disparo_J2;

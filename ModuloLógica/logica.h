@@ -30,6 +30,7 @@ typedef struct{
 
 void disparo_menu(Jugador *j, Tablero *t, Registro_Maquina *reg_maq);
 void disparo_aleatorio(Tablero *t, Registro_Maquina *reg_maq);
+int disparo(Tablero *T, int *xmaq, int *ymaq);
 //Precondición: Recibe las coordenadas del disparo, el puntero a estructura Tablero[Del módulo de tu mama]
 //Postcondición: Modifica el resultado en el tablero.
 //void resultado_disparo(int i, int j, Tablero *t);
@@ -38,6 +39,8 @@ void disparo_aleatorio(Tablero *t, Registro_Maquina *reg_maq);
 //Post: Función por defecto que reinicia el juego, prepara los tableros, carga los archivos y carga la configuración en la partida.
 void reiniciarPartida();
 
+
+void continuarPartida();
 
 /*Precondición: Recibe un puntero a estructura de un jugador, el vector de barcos cargado y la elección del jugador
 Postcondición: Ejecuta la acción de colocar barcos en función del modo escogido*/
@@ -48,15 +51,6 @@ void turno(Jugador *j, int *opcion_salir, Registro_Maquina *reg_maq);
 
 
 void salir_partida();
-
-
-void recorrer_barco();
-
-
-
-
-
-//Nota el disparo automático no es tonto, va a disparar alrededor de su disparo si da en un barco
 
 
 /*Precondición: Recibe la estructura de la configuración ya cargada y un entero con el id del jugador
