@@ -26,6 +26,7 @@ typedef struct{
     int x_maq, y_maq; 
     int orient_maq;
     int flagEncontrado_maq;
+    int esAgua;
 }Registro_Maquina;
 
 
@@ -70,15 +71,15 @@ Postcondición: Ejecuta la acción de colocar barcos en función del modo escogi
 void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco);
 
 
-void f_turno(Jugador *j, int *opcion_salir, Registro_Maquina *reg_maq, ControlPartida *ControlPartida);
+void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlPartida);
 
 
-void salir_partida();
+void salir_partida(ConfiguracionJuego ConfiguracionJuego, ControlPartida ControlPartida);
 
 
-void fin_partida();
+void fin_partida(ConfiguracionJuego config, ControlPartida ControlP);
 
-
+void buscarNcasillas(Tablero t, int *valor, char c);
 
 
 

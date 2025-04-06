@@ -132,8 +132,10 @@ disparoManual(Tablero *t, Registro_Maquina *reg_maq){
 
 
 void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
-
+    
+    int resultado_disparo;
     int x,y;
+    int long_barco=0;
 
     if(j->Tipo_disparo=='M'){
         
@@ -159,9 +161,67 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
             if (devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)=='X'){//Caso de que haya tocado un barco
 
 
-                printf("Has acertado!!");
+                printf("¡¡Has acertado!!");
+                reg_maq->esAgua=false;
 
-                if (disparo(t,reg_maq->x_maq, reg_maq->y_maq)==1){//El barco solo está tocado
+                //Recorre el barco para comprobar si está hundido o solo tocado
+                while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
+                    
+                    
+                    moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+
+
+                }
+                //Dar media vuelta para rellenar casillas
+                int orient_op;//Variable para guardar la dirección opuesta
+                if(reg_maq->orient_maq<=4){
+
+                    orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
+
+                }else{
+
+                    orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
+
+                }
+                
+                //Volver a recorrerlo para ver su longitud
+                while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
+                    
+                    
+                    moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                    long_barco++;
+
+                }
+
+                //Vuelve a dar media vuelta
+                if(reg_maq->orient_maq<=4){
+
+                    orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
+
+                }else{
+
+                    orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
+
+                }
+                
+                for(int i=0; i<long_barco; i++){
+
+
+                    moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+
+                    if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)==' '){
+
+                        resultado_disparo=TOCADO;
+                        i=long_barco;
+                    }
+                    else{
+
+                        resultado_disparo=HUNDIDO;
+
+                    }
+                }
+
+                if (resultado_disparo==1){//El barco solo está tocado
                 colocarCasilla('T', t, reg_maq->x_maq, reg_maq->y_maq);
                     printf("_ _____                   _       _ \n");
                     printf("(_)_   _|__   ___ __ _  __| | ___ | |\n");
@@ -218,7 +278,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 
             }
             }else{
-                
+                reg_maq->esAgua=true;
                 system("cls");
                 colocarCasilla('*', t, x, y);
                 printf("  _ _    _              __      _ _           _       _ \n");
@@ -241,7 +301,6 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
 
 
 void reiniciarPartida(){
-
 
 ConfiguracionJuego ConfiguracionJuego_L = cargar_config();
 Vector_Barcos Vector_Barcos_L = cargar_barcos();
@@ -302,7 +361,12 @@ void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg
 
     }else{
 
-        fin_partida(ConfiguracionJuego_L);
+        if(id==1) //¿Posible empate?
+            f_turno(&j1, &reg_maquina, &ControlPartida);
+        else
+            f_turno(&j2, &reg_maquina, &ControlPartida);
+
+        fin_partida(ConfiguracionJuego_L,ControlPartida);
     }
     }while(ControlPartida.opcion_salir);
 
@@ -319,11 +383,15 @@ void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlParti
 
     Tablero tablero = j->Tablero_oponente;
 
-    
+
     printf("Es el turno de %s\n", j->Nomb_jugador);
     sleep(3);
     system("cls");
-    disparo_menu(j,&j->Tablero_oponente, reg_maq);
+    
+    do{
+        
+        disparo_menu(j,&j->Tablero_oponente, reg_maq);
+    }while(reg_maq->esAgua!=true);//Repetir el disparo en caso de acertar
 
 
 
@@ -346,19 +414,49 @@ void salir_partida(ConfiguracionJuego ConfiguracionJuego, ControlPartida Control
 
 }
 
-void fin_partida(ConfiguracionJuego config){
+void fin_partida(ConfiguracionJuego config, ControlPartida ControlP){
 
 
-    int nAgua[2], nTocado[2], nHundido[2];
+    int nVacias[2], nAgua[2], nTocado[2], nHundido[2];
     //recorre el tablero en busca de *, T y H
+    buscarNcasillas(config.Tablero_oponente1,&nVacias[0],' ');
     buscarNcasillas(config.Tablero_oponente1,&nAgua[0],'*');
     buscarNcasillas(config.Tablero_oponente1,&nTocado[0],'T');
     buscarNcasillas(config.Tablero_oponente1,&nHundido[0],'H');
 
-
+    buscarNcasillas(config.Tablero_oponente1,&nVacias[1],' ');
     buscarNcasillas(config.Tablero_oponente2,&nAgua[1],'*');
     buscarNcasillas(config.Tablero_oponente2,&nTocado[1],'T');
     buscarNcasillas(config.Tablero_oponente2,&nHundido[1],'H');
+    {
+        printf("+----------------------+-----------+------------+------------+------------+------------+------------+------------+------------+\n");
+        printf("|    Valor de las casillas                                                |    Barcos    |\n");
+        printf("+----------------------+-----------+------------+------------+------------+------------+------------+------------+------------+\n");
+        printf("| Jugador   | Disparos | Vacías    | Agua       | Tocadas    | Hundidas   | Hundidos   | Restan     | Ganador    |\n");
+        printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
+        
+        // Datos de los jugadores
+        printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.num_barcos-ControlP.jugador1.nBarcos,ControlP.jugador1.nBarcos,ControlP.jugador1.Ganador);
+        printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
+        printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.num_barcos-ControlP.jugador2.nBarcos,ControlP.jugador2.nBarcos,ControlP.jugador2.Ganador);
+        printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n\n");
+    
+        sleep(8);//Cambiar por "pulse para mostrar lo siguiente"
+
+        printf("Jugador 1: \n");
+        mostrarFlota(&ControlP.jugador1);
+        mostrarOponente(&ControlP.jugador1);
+
+        sleep(8);
+
+
+        printf("Jugador 2: \n");
+        mostrarFlota(&ControlP.jugador2);
+        mostrarOponente(&ControlP.jugador2);
+
+
+    }
+
 
 
 
@@ -445,8 +543,10 @@ void guardar_jugadores(Jugador j1, Jugador j2, ConfiguracionJuego *config){
 
 ControlPartida cargar_controlPartida(){
     ControlPartida ControlPartida;
-    // ControlPartida.jugador1 = j1;
-    // ControlPartida.jugador2 = j2;
+    ControlPartida.jugador1.Ganador = 0;
+    ControlPartida.jugador2.Ganador = 0;
+    ControlPartida.jugador1.Num_disparos = 0;
+    ControlPartida.jugador2.Num_disparos = 0;
     ControlPartida.id = 1;
     ControlPartida.opcion_salir = -1;
     return ControlPartida;
