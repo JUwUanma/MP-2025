@@ -28,6 +28,18 @@ typedef struct{
     int flagEncontrado_maq;
 }Registro_Maquina;
 
+
+typedef struct{
+
+    int id;
+    int opcion_salir;
+    Jugador jugador1;
+    Jugador jugador2;
+
+}ControlPartida;
+
+//FUNCIONES RELACIONADAS CON EL DISPARO
+
 void disparo_menu(Jugador *j, Tablero *t, Registro_Maquina *reg_maq);
 void disparo_aleatorio(Tablero *t, Registro_Maquina *reg_maq);
 int disparo(Tablero *T, int *xmaq, int *ymaq);
@@ -35,23 +47,45 @@ int disparo(Tablero *T, int *xmaq, int *ymaq);
 //Postcondición: Modifica el resultado en el tablero.
 //void resultado_disparo(int i, int j, Tablero *t);
 
+
+
+
+
+
+//FUNCIONES DE DESARROLLO DE LA PARTIDA
+
 //Pre: Ninguna
 //Post: Función por defecto que reinicia el juego, prepara los tableros, carga los archivos y carga la configuración en la partida.
 void reiniciarPartida();
 
-
 void continuarPartida();
+
+void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg_maquina, ControlPartida ControlPartida);
+
+
+
 
 /*Precondición: Recibe un puntero a estructura de un jugador, el vector de barcos cargado y la elección del jugador
 Postcondición: Ejecuta la acción de colocar barcos en función del modo escogido*/
 void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco);
 
 
-void turno(Jugador *j, int *opcion_salir, Registro_Maquina *reg_maq);
+void f_turno(Jugador *j, int *opcion_salir, Registro_Maquina *reg_maq, ControlPartida *ControlPartida);
 
 
 void salir_partida();
 
+
+void fin_partida();
+
+
+
+
+
+
+
+
+//FUNCIONES DE CARGADO Y GUARDADO
 
 /*Precondición: Recibe la estructura de la configuración ya cargada y un entero con el id del jugador
 Postcondición: Devuelve una estructura cargada con los datos del jugador especificado 
