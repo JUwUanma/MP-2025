@@ -7,6 +7,82 @@
 #include "..\\ModuloTablero\Tablero.h"
 #include "..\\ModuloInterfaz\Interfaz.h"
 
+static int isExtremo(Tablero* T_Flota, int x, int y);
+
+int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y)
+{
+    char charBuffer = devolverCasilla(T_Receive, x, y); //Buffer para no llamar a la función dos veces
+
+    if(charBuffer == ' ' || charBuffer == '0'){ //Si está vacía (o casilla ocupada) devuelve AGUA
+        return AGUA;
+    }else{//Sino, recorre el barco, si se ha recorrido por completo -> HUNDIDO, sino -> TOCADO
+        return (recorrerBarco(T_Receive, T_Shoot, x, y) ? HUNDIDO : TOCADO);
+    }
+}
+
+int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y)
+{
+    int orient = G0;
+    int xIni = x, yIni = y;
+    int cont = 0; //Contador para saber si es un barco de única casilla
+    int flagHundido = false, flagNotEqual = ;
+    char charBufferFlota;
+    char charBufferOpon;
+
+    moverAOrientacion(orient, &x, &y);
+
+    //Mientras no encuentre la orientación del barco o, en su defecto, no la encuentra
+    while(cont != (G315 + 1) && devolverCasilla(T_Flota, x, y) != 'X'){
+        x = xIni; y = yIni; //Reinicia la posición
+        rotar(&orient, G45, IZQUIERDA); //Rota a la siguiente orientación
+        moverAOrientacion(orient, &x, &y);
+        cont++;
+    }
+
+    //No se ha encontrado la orientación, es decir, es una casilla única --> HUNDIDO
+    if(cont == G315 + 1) return true;
+
+    //¿[x,y] está en un extremo del barco?
+    while(!isExtremo(T_Flota, x, y, orient)){
+        moverAOrientacion(orient, &x, &y);
+    }
+
+    rotar(&orient, 180, IZQUIERDA);
+
+    do{
+        moverAOrientacion(orient, x, y);
+        charBufferFlota = devolverCasilla(T_Flota, x, y);
+        charBufferOpon = devolverCasilla(T_Oponente, x, y);
+
+        //¿Son ' ' en sus respectivos tableros?
+        if(charBufferFlota == ' ' || charBufferFlota == '0' && charBufferOpon == ' ') return true;
+        if(charBufferFlota != 'X' || charBufferOpon != 'T') return false;
+                //Nota: No la mejor implementación pero en principio funciona
+    }while(true);
+
+}
+
+/*P: Tablero existe, y orient es la orientación del barco, x, y dentro de tablero
+Q: Devuelve true si la casilla se encuentra en un extremo del barco, es decir,
+en la orientación dada, hay una casilla en un sentido y no en el contrario.
+
+TODO's:
+- Si es una casilla de un barco con una única casilla devolverá false
+- El barco puede estar en un lateral del tablero --> ERROR ¿Comprobación en moverAOrientacion?*/
+static int isExtremo(Tablero* T_Flota, int x, int y, int orient)
+{
+    int xIni = x, yIni = y;
+    char charBuffer;
+
+    moverAOrientacion(orient, &x, &y);
+    charBuffer = devolverCasilla(T_Flota, x, y);
+
+    rotar(orient, G180, IZQUIERDA);
+    moverAOrientacion(orient, &xIni, &yIni);
+
+    return (charBuffer != devolverCasilla(T_Flota, xIni, yIni));
+}
+
 void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
 {
     int resDisparo;
