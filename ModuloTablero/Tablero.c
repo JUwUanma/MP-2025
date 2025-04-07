@@ -94,7 +94,7 @@ static int colocarBarco(Tablero* T, Barco* B, int x, int y, int orient)
     for(int i = 0; i < tamBarco; i++){
         colocarCasilla('X', T, x, y); //Se coloca X en [x,y]
         colocarAdyacentes(T, x, y, 'X', '0'); //Coloca los adyacentes '0'
-        moverAOrientacion(orient, x, y); //Se mueve a la siguiente casilla
+        moverAOrientacion(T, orient, x, y); //Se mueve a la siguiente casilla
     }
 }
 
@@ -102,8 +102,9 @@ void colocarAdyacentes(Tablero* T, int x, int y, char charToIgnore, char charToP
 {
     int xIni = x; int yIni= y;
 
+    //i equivale a orientacion
     for(int i = G0; i < G315 + 1; i++){
-        moverAOrientacion(i, x, y);
+        moverAOrientacion(T, i, x, y);
 
         //Si está dentro del tablero
         if(x >= 0 && x < T->maxLado && y >=0 && y < T->maxLado){ 
@@ -276,19 +277,19 @@ static int colocacionBarco(Barco* B, Jugador* j)
                     break;
 
                     case 'A':
-                        moverAOrientacion(G180, &x, &y);
+                        moverAOrientacion(&j->Tablero_flota, G180, &x, &y);
                     break;
 
                     case 'W':
-                        moverAOrientacion(G90, &x, &y);
+                        moverAOrientacion(&j->Tablero_flota, G90, &x, &y);
                     break;
 
                     case 'S':
-                        moverAOrientacion(G270, &x, &y);
+                        moverAOrientacion(&j->Tablero_flota, G270, &x, &y);
                     break;
                     
                     case 'D':
-                        moverAOrientacion(G0, &x, &y);
+                        moverAOrientacion(&j->Tablero_flota, G0, &x, &y);
                     break;
 
                     case 'J':
@@ -341,7 +342,7 @@ void rellenarCasillas(Tablero* T, char c, int nCasillas, int orient, int x, int 
 {
     while(nCasillas){
         T->casillas[x][y] = c;
-        moverAOrientacion(orient, x, y);
+        moverAOrientacion(T, orient, x, y);
         nCasillas--;
     }
 }
@@ -357,7 +358,7 @@ int verificarEspacio(Tablero* T, Barco* B, int orientacion, int x, int y)
 
     while(tamBarco != 0 && flagValid){
         if(!verificarCasilla(T, x, y)) flagValid = false;
-        moverAOrientacion(orientacion, &x, &y);
+        moverAOrientacion(T, orientacion, &x, &y);
         tamBarco--;
     }
     return flagValid;
@@ -428,8 +429,11 @@ int colocarAleatorio(Jugador* j, Vector_Barcos* vect)
     return 1; //Colocado correctamente
 }
 
-void moverAOrientacion(int orientacion, int* x, int* y)
+void moverAOrientacion(Tablero* T, int orientacion, int* x, int* y)
 {
+    int xIni = x, yIni = y;
+    int n = T->maxLado;
+
     switch(orientacion){
         case G0:
             *x++;
@@ -463,6 +467,9 @@ void moverAOrientacion(int orientacion, int* x, int* y)
             *x++; *y--;
         break;
     }
+
+    if(x < 0 || x >= n) *x = xIni;
+    if(y < 0 || y >= n) *y = yIni;
 
 }
 
