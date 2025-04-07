@@ -7,7 +7,7 @@
 #include "..\\ModuloTablero\Tablero.h"
 #include "..\\ModuloInterfaz\Interfaz.h"
 
-static int isExtremo(Tablero* T_Flota, int x, int y);
+static int isExtremo(Tablero* T_Flota, int x, int y, int orient);
 
 int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y)
 {
@@ -25,17 +25,17 @@ int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y)
     int orient = G0;
     int xIni = x, yIni = y;
     int cont = 0; //Contador para saber si es un barco de única casilla
-    int flagHundido = false, flagNotEqual = ;
+    int flagHundido = false;
     char charBufferFlota;
     char charBufferOpon;
 
-    moverAOrientacion(orient, &x, &y);
+    moverAOrientacion(T_Flota, orient, &x, &y);
 
     //Mientras no encuentre la orientación del barco o, en su defecto, no la encuentra
     while(cont != (G315 + 1) && devolverCasilla(T_Flota, x, y) != 'X'){
         x = xIni; y = yIni; //Reinicia la posición
         rotar(&orient, G45, IZQUIERDA); //Rota a la siguiente orientación
-        moverAOrientacion(orient, &x, &y);
+        moverAOrientacion(T_Flota, orient, &x, &y);
         cont++;
     }
 
@@ -44,13 +44,13 @@ int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y)
 
     //¿[x,y] está en un extremo del barco?
     while(!isExtremo(T_Flota, x, y, orient)){
-        moverAOrientacion(orient, &x, &y);
+        moverAOrientacion(T_Flota, orient, &x, &y);
     }
 
     rotar(&orient, 180, IZQUIERDA);
 
     do{
-        moverAOrientacion(orient, x, y);
+        moverAOrientacion(T_Flota, orient, &x, &y);
         charBufferFlota = devolverCasilla(T_Flota, x, y);
         charBufferOpon = devolverCasilla(T_Oponente, x, y);
 
@@ -74,35 +74,36 @@ static int isExtremo(Tablero* T_Flota, int x, int y, int orient)
     int xIni = x, yIni = y;
     char charBuffer;
 
-    moverAOrientacion(orient, &x, &y);
+    moverAOrientacion(T_Flota, orient, &x, &y);
     charBuffer = devolverCasilla(T_Flota, x, y);
 
     rotar(orient, G180, IZQUIERDA);
-    moverAOrientacion(orient, &xIni, &yIni);
+    moverAOrientacion(T_Flota, orient, &xIni, &yIni);
 
     return (charBuffer != devolverCasilla(T_Flota, xIni, yIni));
 }
 
-void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
+void dispararAleatorio(Tablero* T_Receive, Tablero* T_Shoot, Registro_Maquina* reg)
 {
     int resDisparo;
     int xAux = reg->x_maq;
     int yAux = reg->y_maq;
     int orientAux = reg->orient_maq;
     int flagValidPosition = false;
+    int n = T_Receive->maxLado;
     //¿Se ha encontrado un barco?
     if(!reg->flagEncontrado_maq){
         //No se ha encontrado --> Disparo aleatorio
 
         //Elige una posición aleatoria del tablero
         do{
-            reg->x_maq = 0 + rand() % T->maxLado;
-            reg->y_maq = 0 + rand() % T->maxLado;
-        }while(devolverCasilla(T, reg->x_maq, reg->y_maq) != ' ');
+            reg->x_maq = 0 + rand() % n;
+            reg->y_maq = 0 + rand() % n;
+        }while(devolverCasilla(T_Receive, reg->x_maq, reg->y_maq) != ' ');
         //¿Es vacía?
 
         //Dispara en la casilla elegida. ¿Ha sido agua?
-        if((resDisparo = disparo(T, reg->x_maq, reg->y_maq) != AGUA))
+        if((resDisparo = disparo(T_Receive, T_Shoot, reg->x_maq, reg->y_maq) != AGUA))
             reg->flagEncontrado_maq = reg->flagEncontrado_maq == 2 ? false : true;
             //¿Lo ha hundido?
         
@@ -116,10 +117,10 @@ void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
             //Rota la orientación a una aleatoria
             do{
                orientAux = G0 + rand() % (G315 + 1);
-               moverAOrientacion(orientAux, &xAux, &yAux);
+               moverAOrientacion(T_Shoot, orientAux, &xAux, &yAux);
                 
                //¿Es agua?
-                if(devolverCasilla(T, reg->x_maq, reg->y_maq) != '*') 
+                if(devolverCasilla(T_Shoot, reg->x_maq, reg->y_maq) != '*') 
                     flagValidPosition = true;
                 else{
                     orientAux = reg->orient_maq;
@@ -131,7 +132,7 @@ void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
 
             //Dispara en la casilla elegida
             //¿Ha sido agua?
-            if(resDisparo = disparo(T, reg->x_maq, reg->y_maq)){
+            if(resDisparo = disparo(T_Receive, T_Shoot, reg->x_maq, reg->y_maq)){
                 //No ha sido agua
 
                 //¿Lo ha hundido?
@@ -145,10 +146,10 @@ void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
 
         }else{
             //Se ha encontrado la orientación del barco
-            moverAOrientacion(reg->orient_maq, &reg->x_maq, &reg->y_maq);
+            moverAOrientacion(T_Receive, reg->orient_maq, &reg->x_maq, &reg->y_maq);
 
             //¿Ha sido agua?
-            if(resDisparo = disparo(T, reg->x_maq, reg->y_maq)){
+            if(resDisparo = disparo(T_Receive, T_Shoot, reg->x_maq, reg->y_maq)){
                 //No ha sido agua
 
                 //¿Lo ha hundido?
@@ -157,13 +158,13 @@ void dispararAleatorio(Tablero* T, Registro_Maquina* reg)
                 //Si ha sido agua
                 rotar(&orientAux, G180, DERECHA); //Indistinto derecha o izquierda
                 do{
-                    moverAOrientacion(orientAux, &xAux, &yAux);
-                    if(devolverCasilla(T, xAux, yAux) != ' '){
+                    moverAOrientacion(T_Receive, orientAux, &xAux, &yAux);
+                    if(devolverCasilla(T_Shoot, xAux, yAux) != ' '){
                         flagValidPosition = true;
                     }
                 }while(!flagValidPosition); //Técnicamente no es necesario aquí las variables aux
 
-                moverAOrientacion(reg->orient_maq, &xAux, &yAux);
+                moverAOrientacion(T_Receive, reg->orient_maq, &xAux, &yAux);
                 reg->x_maq = xAux;
                 reg->y_maq = yAux;
                 reg->orient_maq = orientAux;
@@ -244,7 +245,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
                     
                     
-                    moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                    moverAOrientacion(t, reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
 
 
                 }

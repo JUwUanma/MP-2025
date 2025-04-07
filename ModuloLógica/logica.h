@@ -53,7 +53,13 @@ En todos los casos se guarda en T_Shoot la información resultante.
 int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y);
 
 void disparo_menu(Jugador *j, Tablero *t, Registro_Maquina *reg_maq);
-void dispararAleatorio(Tablero *t, Registro_Maquina *reg_maq);
+
+/*P: Tableros y registros máquinas existen
+- T_Receive: TABLERO FLOTA AL QUE SE DISPARA
+- T_Shoot: TABLERO OPONENTE EN EL QUE SE REGISTRA EL DISPARO
+Q: Dispara a una posición aleatoria, si encuentra un barco, registra la posición y en el siguiente turno
+dispará para encontrar la orientación, una vez encontrada, disparará hasta derribarlo.*/
+void dispararAleatorio(Tablero* T_Receive, Tablero* T_Shoot, Registro_Maquina *reg);
 
 /*P: Tableros existen, x, y dentro de tablero
 Q: Recorre el barco empezando desde x,y y comprueba si las casillas entre T_Flota y T_Oponente coinciden
