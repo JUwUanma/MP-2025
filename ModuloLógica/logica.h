@@ -41,17 +41,24 @@ typedef struct{
 
 //FUNCIONES RELACIONADAS CON EL DISPARO
 
+/*P: Tableros existen, x,y dentro de Tableros. 
+- T_Receive: TABLERO FLOTA AL QUE SE DISPARA
+- T_Shoot: TABLERO OPONENTE EN EL QUE SE REGISTRA EL DISPARO
+
+Q: Devuelve AGUA(0) si en [x,y] de T_Receive NO hay barco
+Devuelve TOCADO(1) si en [x,y] de T_Receive SI hay barco, pero NO lo ha hundido
+Devuelve HUNDIDO(2) si en [x,y] de T_Receive SI hay barco y lo HA HUNDIDO.
+En todos los casos se guarda en T_Shoot la información resultante.
+*/
+int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y);
+
 void disparo_menu(Jugador *j, Tablero *t, Registro_Maquina *reg_maq);
-void disparo_aleatorio(Tablero *t, Registro_Maquina *reg_maq);
-int disparo(Tablero *T, int *xmaq, int *ymaq);
-//Precondición: Recibe las coordenadas del disparo, el puntero a estructura Tablero[Del módulo de tu mama]
-//Postcondición: Modifica el resultado en el tablero.
-//void resultado_disparo(int i, int j, Tablero *t);
+void dispararAleatorio(Tablero *t, Registro_Maquina *reg_maq);
 
-
-
-
-
+/*P: Tableros existen, x, y dentro de tablero
+Q: Recorre el barco empezando desde x,y y comprueba si las casillas entre T_Flota y T_Oponente coinciden
+cómo disparadas y que haya un barco, si es así --> true, sino --> false*/
+int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y);
 
 //FUNCIONES DE DESARROLLO DE LA PARTIDA
 
