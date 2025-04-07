@@ -85,7 +85,7 @@ void colocarAdyacentes(Tablero* T, int x, int y, char charToIgnore, char charToP
 
 //P: orientacion válida -> enum orientacion.
 //Q: Mueve la coordenada x, y una casilla a la orientación indicada.
-void moverAOrientacion(int orientacion, int x, int y);
+void moverAOrientacion(Tablero* T, int orientacion, int* x, int* y);
 
 /*P: orientBase y grados válida -> enum orientacion. dirección válida -> enum direccion
 Q: Rota orientBase los grados indicados a la dirección indicada. Da la vuelta si lo necesita.*/
