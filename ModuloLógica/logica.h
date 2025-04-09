@@ -39,6 +39,20 @@ typedef struct{
 
 }ControlPartida;
 
+//Estructura Jugador: almacena la informacion de los jugadores
+typedef struct{
+    int Id_jugador;             		//Identificador unico de cada jugador
+    char Nomb_jugador[20];      		//Nombre del jugador
+    char Tipo_disparo;          		//Tipo de disparo seleccionado (A -> Automatico [sistema], M -> Manual [pregunta al jugador])
+    int Num_disparos;           		//Contador del numero de disparos de dicho jugador en cada turno
+    int Ganador;                		//Indicador de si ha ganado la partida (0 -> Falso, 1 -> Verdadero)
+    int barcos_restantes;               //Contador que decrece en función de los barcos restantes
+    Tablero Tablero_flota;       	    //Tablero de la flota del jugador
+    Tablero Tablero_oponente;    	    //Tablero del oponente
+}Jugador;
+
+
+
 //FUNCIONES RELACIONADAS CON EL DISPARO
 
 /*P: Tableros existen, x,y dentro de Tableros. 
@@ -53,6 +67,12 @@ En todos los casos se guarda en T_Shoot la información resultante.
 int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y);
 
 void disparo_menu(Jugador *j, Tablero *t, Registro_Maquina *reg_maq);
+
+
+
+void disparoManual(Tablero *t, Registro_Maquina *reg_maq);
+
+
 
 /*P: Tableros y registros máquinas existen
 - T_Receive: TABLERO FLOTA AL QUE SE DISPARA
@@ -106,5 +126,7 @@ Postcondición: Devuelve una estructura cargada con los datos del jugador especi
 */
 
 void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id);
+
+ControlPartida cargar_controlPartida();
 
 #endif //LOGICA_H

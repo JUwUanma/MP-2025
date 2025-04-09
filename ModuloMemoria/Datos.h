@@ -27,17 +27,6 @@ typedef struct{
 }Tablero;
 
 
-//Estructura Jugador: almacena la informacion de los jugadores
-typedef struct{
-    int Id_jugador;             		//Identificador unico de cada jugador
-    char Nomb_jugador[20];      		//Nombre del jugador
-    char Tipo_disparo;          		//Tipo de disparo seleccionado (A -> Automatico [sistema], M -> Manual [pregunta al jugador])
-    int Num_disparos;           		//Contador del numero de disparos de dicho jugador en cada turno
-    int Ganador;                		//Indicador de si ha ganado la partida (0 -> Falso, 1 -> Verdadero)
-    Tablero Tablero_flota;       	    //Tablero de la flota del jugador
-    Tablero Tablero_oponente;    	    //Tablero del oponente
-}Jugador;
-
 
 //Estructura Juego: Almacena la informacion del juego
 typedef struct {
