@@ -39,8 +39,6 @@ typedef struct{
 
 }ControlPartida;
 
-<<<<<<< HEAD
-=======
 //Estructura Jugador: almacena la informacion de los jugadores
 typedef struct{
     int Id_jugador;             		//Identificador unico de cada jugador
@@ -55,7 +53,6 @@ typedef struct{
 
 
 
->>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
 //FUNCIONES RELACIONADAS CON EL DISPARO
 
 /*P: Tableros existen, x,y dentro de Tableros. 
@@ -123,5 +120,8 @@ Postcondición: Devuelve una estructura cargada con los datos del jugador especi
 */
 
 void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id);
+
+
+ControlPartida cargar_controlPartida();
 
 #endif //LOGICA_H

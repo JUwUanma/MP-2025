@@ -265,7 +265,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
                     
                     
-                    moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                    moverAOrientacion(t,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
                     long_barco++;
 
                 }
@@ -284,7 +284,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 for(int i=0; i<long_barco; i++){
 
 
-                    moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                    moverAOrientacion(t,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
 
                     if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)==' '){
 
@@ -318,7 +318,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                     while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
                     
                     
-                        moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                        moverAOrientacion(t,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
 
 
                     }
@@ -336,7 +336,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
 
                     do{
                     
-                        moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                        moverAOrientacion(t,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
 
                         if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*') //Doble seguridad para que no se rellenen casillas de más
                         colocarAdyacentes(t, reg_maq->x_maq, reg_maq->y_maq, '*', 'H');
@@ -398,7 +398,8 @@ reg_maquina.orient_maq=-1;
 reg_maquina.x_maq=0;
 reg_maquina.y_maq=0;
 
-    ControlPartida ControlPartida_L = cargar_controlPartida();
+    ControlPartida ControlPartida_L;
+    ControlPartida_L = cargar_controlPartida();
 
 //Estructuras de los jugadores
 Jugador *j1= &ControlPartida_L.jugador1;
@@ -425,7 +426,7 @@ char eleccion_barco_j1, eleccion_barco_j2;
 
 void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg_maquina, ControlPartida ControlPartida){
 
-    //int opcion_salir = ControlPartida.opcion_salir; //Variable booleana
+    int opcion_salir = ControlPartida.opcion_salir; //Variable booleana
     int id = 1;//ControlPartida.id; //Recupera el turno que tocaba en la partida
     Jugador j1 = ControlPartida.jugador1;
     Jugador j2 = ControlPartida.jugador2;
@@ -452,25 +453,19 @@ void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg
 
     }else{
 
-<<<<<<< HEAD
-        if(id==1) //¿Posible empate?
-            f_turno(&j1, &reg_maquina, &ControlPartida);
-        else
-=======
         if(id==2) //¿Posible empate?
             
->>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
             f_turno(&j2, &reg_maquina, &ControlPartida);
 
         fin_partida(ConfiguracionJuego_L,ControlPartida);
     
-    }while(ControlPartida.opcion_salir);
+    }}while(ControlPartida.opcion_salir);
 
 
 salir_partida(ConfiguracionJuego_L, ControlPartida);
 
-}
 
+}
 
 void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlPartida){
 
@@ -548,11 +543,7 @@ void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
         
         // Datos de los jugadores
-<<<<<<< HEAD
-        printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.num_barcos-ControlP.jugador1.nBarcos,ControlP.jugador1.nBarcos,ControlP.jugador1.Ganador);
-=======
         printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador1.barcos_restantes,ControlP.jugador1.Ganador);
->>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
         printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.num_barcos-ControlP.jugador2.nBarcos,ControlP.jugador2.nBarcos,ControlP.jugador2.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n\n");
@@ -576,7 +567,7 @@ void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
 
 
 
-}
+
 
 void buscarNcasillas(Tablero t, int *valor, char c){
 
@@ -595,19 +586,8 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
     do{
 
         printf("%s: Introduce un carácter para elegir modo de colocación de barcos\n", pj->Nomb_jugador);
-<<<<<<< HEAD
-        printf("'M' == Manual    'A' == Automático");
-        
-        scanf("%c",&eleccion_barco);
-        
-        
-        }while(eleccion_barco!='M'||eleccion_barco!='A');
-    
-        if(eleccion_barco=='M'){
-=======
         int flag_valid_b=0;
         do{
->>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
 
             colocarManual(pj,vectBarcos);
         
@@ -615,11 +595,6 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
 
             colocarAleatorio(pj);
 
-<<<<<<< HEAD
-        }
-        
-
-=======
             switch (eleccion_barco)
             {
             case 'M':
@@ -639,10 +614,9 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
                 break;
             }
         }while(!flag_valid_b);
->>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
+    }
+
 }
-
-
 
 
 //FUNCIONES DE CARGADO Y GUARDADO
@@ -687,6 +661,7 @@ void guardar_jugadores(Jugador j1, Jugador j2, ConfiguracionJuego *config){
 
 
 ControlPartida cargar_controlPartida(){
+
     ControlPartida ControlPartida;
     ControlPartida.jugador1.Ganador = 0;
     ControlPartida.jugador2.Ganador = 0;
@@ -695,6 +670,7 @@ ControlPartida cargar_controlPartida(){
     ControlPartida.id = 1;
     ControlPartida.opcion_salir = -1;
     return ControlPartida;
+
 }
 
 void guardar_controlPartida(ControlPartida ControlPartida){
