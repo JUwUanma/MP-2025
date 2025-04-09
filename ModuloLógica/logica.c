@@ -417,7 +417,6 @@ char eleccion_barco_j1, eleccion_barco_j2;
     f_eleccion_barcos(&j1,Vector_Barcos_L,eleccion_barco_j1);
     f_eleccion_barcos(&j2,Vector_Barcos_L,eleccion_barco_j2);
     
-    //int opcion_salir; //Variable booleana
     int id = j1->Id_jugador; //Comienza siempre el jugador 1
 
     flujoPartida(ConfiguracionJuego_L, &reg_maquina, ControlPartida_L);
@@ -425,7 +424,7 @@ char eleccion_barco_j1, eleccion_barco_j2;
 
 void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg_maquina, ControlPartida ControlPartida){
 
-    //int opcion_salir = ControlPartida.opcion_salir; //Variable booleana
+    int opcion_salir = ControlPartida.opcion_salir; //Variable booleana
     int id = 1;//ControlPartida.id; //Recupera el turno que tocaba en la partida
     Jugador j1 = ControlPartida.jugador1;
     Jugador j2 = ControlPartida.jugador2;
@@ -437,6 +436,18 @@ void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg
             f_turno(&j1, &reg_maquina, &ControlPartida);
         else
             f_turno(&j2, &reg_maquina, &ControlPartida);
+
+            //Fin de ronda, ¿salir de la partida?
+            printf("¿Quieres seguir jugando? (Pulsa la opción que desees)?:\nSí: [1]\nNo: [0]\n");
+        do{
+
+            scanf("%i", &opcion_salir);
+
+            if(opcion_salir == 0)
+                salir_partida(ConfiguracionJuego_L, ControlPartida);
+
+
+        }while((opcion_salir!=0)&&(opcion_salir!=1));
 
     }else{
 
@@ -477,13 +488,6 @@ void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlParti
         j->Ganador=true;
 
     *id = (*id==1) ? 2 : 1; //Cambio de turno (id == identificador jugador)
-    
-    printf("¿Quieres continuar(Pulsa la opción que desees)?:\nSí: [1]\nNo: [0]");
-    do{
-
-        scanf("%i", &opcion_salir);
-        
-    }while((*opcion_salir!=0)&&(*opcion_salir!=1));
 
 }
 
@@ -511,6 +515,7 @@ void fin_partida(ConfiguracionJuego config, ControlPartida ControlP){
     buscarNcasillas(config.Tablero_oponente2,&nTocado[1],'T');
     buscarNcasillas(config.Tablero_oponente2,&nHundido[1],'H');
 
+    
 
     MenuJuego();
 
@@ -628,7 +633,7 @@ void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id){
         j->Tablero_flota = config.Tablero_flota1;
         j->Tablero_oponente = config.Tablero_oponente1;
         j->barcos_restantes = config.Tama_flota;
-    
+        j->Ganador=0;
     }
     else{//Copia los datos de J2 en la estructura de J2
         
@@ -637,6 +642,7 @@ void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id){
         j->Tablero_flota = config.Tablero_flota2;
         j->Tablero_oponente = config.Tablero_oponente2;
         j->barcos_restantes = config.Tama_flota;
+        j->Ganador=0;
 
     }
      
