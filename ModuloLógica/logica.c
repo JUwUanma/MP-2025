@@ -189,7 +189,7 @@ disparoManual(Tablero *t, Registro_Maquina *reg_maq){
         
             if(x > 0 && x <= t->maxLado && y > 0 && y <= t->maxLado) {
             //Verificar que la casilla no haya sido disparada antes
-                if(t->casillas[x-1][y-1] == ' ') { //Resta 1 porque los vectores empiezan en 0
+                if(t->casillas[x][y] == ' ') { 
                     flagValidPosition = 1;
                 } else {
 
@@ -226,7 +226,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
             //x=rand() % (t->maxLado + 1);       //Número aleatorio entre 0 y xMax
             //y=rand() % (t->maxLado + 1);       //Igual pero con y
             
-            //}while(t->casillas[x][y]!=' '); //t->casillas puede que lo cambie por otra función
+            //}while(t->casillas[x][y]!=' '); 
     
             disparoAleatorio(t, reg_maq);
     
@@ -241,64 +241,67 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 printf("¡¡Has acertado!!");
                 reg_maq->esAgua=false;
 
+
+                //recorrerBarco(&j->Tablero_flota,&j->Tablero_oponente,x,y);
+
                 //Recorre el barco para comprobar si está hundido o solo tocado
-                while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
+                // while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
                     
                     
-                    moverAOrientacion(t, reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                //     moverAOrientacion(t, reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
 
 
-                }
-                //Dar media vuelta para rellenar casillas
-                int orient_op;//Variable para guardar la dirección opuesta
-                if(reg_maq->orient_maq<=4){
+                // }
+                // //Dar media vuelta para rellenar casillas
+                // int orient_op;//Variable para guardar la dirección opuesta
+                // if(reg_maq->orient_maq<=4){
 
-                    orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
+                //     orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
 
-                }else{
+                // }else{
 
-                    orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
+                //     orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
 
-                }
+                // }
                 
-                //Volver a recorrerlo para ver su longitud
-                while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
+                // //Volver a recorrerlo para ver su longitud
+                // while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
                     
                     
-                    moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
-                    long_barco++;
+                //     moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                //     long_barco++;
 
-                }
+                // }
 
-                //Vuelve a dar media vuelta
-                if(reg_maq->orient_maq<=4){
+                // //Vuelve a dar media vuelta
+                // if(reg_maq->orient_maq<=4){
 
-                    orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
+                //     orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
 
-                }else{
+                // }else{
 
-                    orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
+                //     orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
 
-                }
+                // }
                 
-                for(int i=0; i<long_barco; i++){
+                // for(int i=0; i<long_barco; i++){
 
 
-                    moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                //     moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
 
-                    if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)==' '){
+                //     if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)==' '){
 
-                        resultado_disparo=TOCADO;
-                        i=long_barco;
-                    }
-                    else{
+                //         resultado_disparo=TOCADO;
+                //         i=long_barco;
+                //     }
+                //     else{
 
-                        resultado_disparo=HUNDIDO;
+                //         resultado_disparo=HUNDIDO;
 
-                    }
-                }
+                //     }
+                // }
 
-                if (resultado_disparo==1){//El barco solo está tocado
+                if (!recorrerBarco(&j->Tablero_flota,&j->Tablero_oponente,x,y)){//El barco solo está tocado
                 colocarCasilla('T', t, reg_maq->x_maq, reg_maq->y_maq);
                     printf("_ _____                   _       _ \n");
                     printf("(_)_   _|__   ___ __ _  __| | ___ | |\n");
@@ -314,33 +317,34 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
             
             else{//Caso de que barco esté hundido
                     
-                    //Recorrer barco hasta el inicio de este
-                    while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
+                    // //Recorrer barco hasta el inicio de este
+                    // while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
                     
                     
-                        moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                    //     moverAOrientacion(reg_maq->orient_maq,, &reg_maq->x_maq, &reg_maq->y_maq);
 
 
-                    }
-                    //Dar media vuelta para rellenar casillas
-                    int orient_op;//Variable para guardar la dirección opuesta
-                    if(reg_maq->orient_maq<=4){
+                    // }
+                    // //Dar media vuelta para rellenar casillas
+                    // int orient_op;//Variable para guardar la dirección opuesta
+                    // if(reg_maq->orient_maq<=4){
 
-                        orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
+                    //     orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
 
-                    }else{
+                    // }else{
 
-                        orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
+                    //     orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
 
-                    }
+                    // }
 
-                    do{
+                    do{//Rellenar el barco con H
                     
-                        moverAOrientacion(reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
+                        moverAOrientacion(&j->Tablero_oponente,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
 
-                        if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*') //Doble seguridad para que no se rellenen casillas de más
+                        if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){ //Doble seguridad para que no se rellenen casillas de más
                         colocarAdyacentes(t, reg_maq->x_maq, reg_maq->y_maq, '*', 'H');
-                    
+                        colocarAdyacentes(t, reg_maq->x_maq, reg_maq->y_maq, 'H', '*');
+                        }
                     }while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*');
 
                 system("cls");
@@ -424,7 +428,7 @@ char eleccion_barco_j1, eleccion_barco_j2;
 void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg_maquina, ControlPartida ControlPartida){
 
     //int opcion_salir = ControlPartida.opcion_salir; //Variable booleana
-    int id = ControlPartida.id; //Recupera el turno que tocaba en la partida
+    int id = 1;//ControlPartida.id; //Recupera el turno que tocaba en la partida
     Jugador j1 = ControlPartida.jugador1;
     Jugador j2 = ControlPartida.jugador2;
 
@@ -436,7 +440,7 @@ void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg
         else
             f_turno(&j2, &reg_maquina, &ControlPartida);
 
-    }else{
+    }else{ if(j1.nBarcos+j2.nBarcos==1){
 
         if(id==1) //¿Posible empate?
             f_turno(&j1, &reg_maquina, &ControlPartida);
@@ -444,6 +448,7 @@ void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg
             f_turno(&j2, &reg_maquina, &ControlPartida);
 
         fin_partida(ConfiguracionJuego_L,ControlPartida);
+        }
     }
     }while(ControlPartida.opcion_salir);
 
@@ -592,6 +597,7 @@ void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id){
         j->Tipo_disparo=config.Tipo_disparo_J1;
         j->Tablero_flota = config.Tablero_flota1;
         j->Tablero_oponente = config.Tablero_oponente1;
+        j->nBarcos = config.Tama_flota;
     
     }
     else{//Copia los datos de J2 en la estructura de J2
@@ -600,7 +606,8 @@ void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id){
         j->Tipo_disparo=config.Tipo_disparo_J2;
         j->Tablero_flota = config.Tablero_flota2;
         j->Tablero_oponente = config.Tablero_oponente2;
-    
+        j->nBarcos = config.Tama_flota;
+
     }
      
 }
