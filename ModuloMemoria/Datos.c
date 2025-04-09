@@ -214,7 +214,7 @@ void mostrar_barcos(Vector_Barcos b){
 		
     // Imprimir los nombres de los barcos
     for (i; i < b.tam; i++) {
-        printf("Nombre: %s: | Tamaño: %d\n", b.Barcos[i].Nomb_barco, b.Barcos[i].Tam_barco);
+        printf("Nombre: %s: - Tamaño: %d - (%c)\n", b.Barcos[i].Nomb_barco, b.Barcos[i].Tam_barco, b.Barcos[i].Nomb_barco[0]);
     }
 
     // Liberar la memoria asignada
@@ -253,33 +253,50 @@ void mostrar_configuracion(ConfiguracionJuego config) {
 	printf("\n\nDatos de los barcos:\n\n");
 	printf("Numero de barcos totales en la flota: %d\n", config.Tama_flota);
 	printf("Numero de barcos diferentes: %d\n", config.Tama_tipos_barco);
+	printf("Barcos que se van a usar: \n");
+	for(i = 0; i < config.Tama_flota; i++){
+		printf("%d. %c - %d\n", i, config.Tipo_barcos[i], config.Num_barcos[i]);
+	}
+	
+	printf("\n");
 	
 	printf("\n\nDatos de los tableros: \n\n");
 	printf("Tamaño de los tableros: %dx%d\n", config.Tama_tablero, config.Tama_tablero);
 	
 	printf("Tablero de la flota del jugador 1: ");
 	for (i = 0; i < config.Tama_tablero; i++){
-		printf("\n")
+		printf("\n");
 		for (j = 0; j < config.Tama_tablero; j++){
-			printf(" %d ", config.Tablero_flota1[i]);
+			printf(" %c ", config.Tablero_flota1[i][j]);
 		}
 	}
+	printf("\n");
 	
-	//Terminar resto de tableros y tipos de barcos
+	printf("Tablero oponente del jugador 1: ");
+	for (i = 0; i < config.Tama_tablero; i++){
+		printf("\n");
+		for (j = 0; j < config.Tama_tablero; j++){
+			printf(" %c ", config.Tablero_oponente1[i][j]);
+		}
+	}
+	printf("\n");
 	
+	printf("Tablero de la flota del jugador 2: ");
+	for (i = 0; i < config.Tama_tablero; i++){
+		printf("\n");
+		for (j = 0; j < config.Tama_tablero; j++){
+			printf(" %c ", config.Tablero_flota2[i][j]);
+		}
+	}
+	printf("\n");
 	
-	
-    // Mostrar tamaño del tablero
-    printf("Tamaño del tablero: %d\n\n", config.Tama_tablero);
-
-    // Mostrar tipos de barcos y cantidad
-    printf("Tipos de barcos y cantidad:\n");
-    for (int i = 0; i < config.Tama_flota; i++) {
-        printf("  Tipo: %c, Cantidad: %d\n", config.Tipo_barcos[i], config.num_barcos[i]);
-    }
-
-    // Mostrar jugador inicial
-    printf("\nJugador inicial: %s\n\n", config.Primer_Jugador);
+	printf("Tablero oponente del jugador 2: ");
+	for (i = 0; i < config.Tama_tablero; i++){
+		printf("\n");
+		for (j = 0; j < config.Tama_tablero; j++){
+			printf(" %c ", config.Tablero_oponente2[i][j]);
+		}
+	}
 }
 
 
@@ -292,13 +309,14 @@ void modificar_config(ConfiguracionJuego *config) {
         printf("\n--- Menú de modificación ---\n");
         printf("1. Cambiar nombre del Jugador 1\n");
         printf("2. Cambiar tipo de disparo del Jugador 1\n");
-        printf("3. Cambiar nombre del Jugador 2\n");
-        printf("4. Cambiar tipo de disparo del Jugador 2\n");
-        printf("5. Cambiar tamaño del tablero\n");
-        printf("6. Cambiar tipos de barcos\n");
-        printf("7. Cambiar número de barcos\n");
-        printf("8. Cambiar jugador inicial\n");
-        printf("9. Salir\n");
+        printf("3. Cambiar numero de disparos del Jugador 1\n");
+        printf("4. Declarar a Jugador 1 como ganador\n");
+        printf("5. Cambiar nombre del Jugador 2\n");
+        printf("6. Cambiar tipo de disparo del Jugador 2\n");
+        printf("7. Cambiar numero de disparo del Jugador 1\n");
+        printf("8. Declarar a Jugador 1 como ganador\n");
+        printf("9. Cambiar barcos\n");
+        printf("0. Salir\n");
         printf("Seleccione una opción: ");
         scanf("%d", &opcion);
         getchar();  // Limpiar el buffer de entrada
@@ -316,126 +334,112 @@ void modificar_config(ConfiguracionJuego *config) {
                 scanf("%c", &config->Tipo_disparo_J1);
                 getchar();  // Limpiar el buffer de entrada
                 break;
-
+            
             case 3:
+            	printf("Número de disparos de Jugador 1: ");
+            	scanf("%d", &config->Num_disparos_J1);
+            	break;
+            	
+            case 4:
+            	printf("Jugador 1 declarado ganador.");
+            	config->Ganador_J1 = 1;
+            	break;
+
+            case 5:
                 printf("Nuevo nombre para Jugador 2: ");
                 fgets(buffer, sizeof(buffer), stdin);
                 buffer[strcspn(buffer, "\n")] = '\0';  // Eliminar el salto de línea
                 strcpy(config->Nomb_J2, buffer);
                 break;
 
-            case 4:
+            case 6:
                 printf("Nuevo tipo de disparo para Jugador 2 (M/A): ");
                 scanf("%c", &config->Tipo_disparo_J2);
                 getchar();  // Limpiar el buffer de entrada
                 break;
-
-            case 5:
-                printf("Nuevo tamaño del tablero: ");
-                scanf("%d", &config->Tama_tablero);
-                getchar();  // Limpiar el buffer de entrada
-                break;
-
-            case 6: {
-			    Vector_Barcos vb = cargar_barcos();
-			    mostrar_barcos(vb);
-			
-			    printf("Nuevos tipos de barcos (separados por comas, sin espacios): ");
-			    fgets(buffer, sizeof(buffer), stdin);
-			    buffer[strcspn(buffer, "\n")] = '\0';  // Eliminar el salto de línea
-			
-			    // Liberar memoria anterior si es necesario
-			    if (config->Tipo_barcos != NULL) {
-			        free(config->Tipo_barcos);
-			    }
-			
-			    // Contar el número de tipos de barcos
-			    config->Tama_flota = 0;
-			    char *token = strtok(buffer, ",");
-			    while (token != NULL) {
-			        config->Tama_flota++;
-			        token = strtok(NULL, ",");
-			    }
-			
-			    // Reservar memoria para los nuevos tipos de barcos
-			    config->Tipo_barcos = (char *)malloc(config->Tama_flota * sizeof(char));
-			    if (config->Tipo_barcos == NULL) {
-			        printf("Error al reservar memoria para tipos de barcos.\n");
-			        exit(1);
-			    }
-			
-			    // Extraer los nuevos tipos de barcos
-			    token = strtok(buffer, ",");
-			    for (int i = 0; i < config->Tama_flota; i++) {
-			        config->Tipo_barcos[i] = token[0];  // Tomar el primer carácter
-			        token = strtok(NULL, ",");
-			    }
-			    free(vb.Barcos);
-			    break;
-			}
-
-
+                
             case 7:
-                printf("Nuevo número de barcos (separados por comas, sin espacios): ");
-                fgets(buffer, sizeof(buffer), stdin);
-                buffer[strcspn(buffer, "\n")] = '\0';  // Eliminar el salto de línea
-
-                // Liberar memoria anterior si es necesario
-                if (config->num_barcos != NULL) {
-                    free(config->num_barcos);
-                }
-
-                // Reservar memoria para los nuevos números de barcos
-                config->num_barcos = (int *)malloc(config->Tama_flota * sizeof(int));
-                if (config->num_barcos == NULL) {
-                    printf("Error al reservar memoria para números de barcos.\n");
-                    exit(1);
-                }
-
-                // Extraer los nuevos números de barcos
-                char *token_num = strtok(buffer, ",");
-                for (int i = 0; i < config->Tama_flota; i++) {
-                    config->num_barcos[i] = atoi(token_num);
-                    token_num = strtok(NULL, ",");
-                }
-                break;
-
+            	printf("Número de disparos de Jugador 2: ");
+            	scanf("%d", &config->Num_disparos_J2);
+            	break;
+            
             case 8:
-                printf("Nuevo jugador inicial: ");
-                fgets(buffer, sizeof(buffer), stdin);
-                buffer[strcspn(buffer, "\n")] = '\0';  // Eliminar el salto de línea
-                strcpy(config->Primer_Jugador, buffer);
-                break;
-
+            	printf("Jugador 2 declarado ganador.");
+            	config->Ganador_J2 = 1;
+            	break;
+            
             case 9:
-                printf("Saliendo del menú de modificación...\n");
-                break;
+            	modificar_barcos(config);
 
-            default:
-                printf("Opción no válida. Intente de nuevo.\n");
-                break;
-        }
 
         // Mostrar la configuración actualizada
-        if (opcion != 9) {
+        if (opcion != 0) {
             printf("\nConfiguración actualizada:\n");
             mostrar_configuracion(*config);
         }
 
-    } while (opcion != 9);
+    } while (opcion != 0);
+}
+
+
+void modificar_barcos(ConfiguracionJuego *config){
+	Vector_Barcos vb = cargar_barcos();
+	int i = 0, j = 0, cont = 0, encontrado = 0, numero_barcos;
+	char placeholder;
+	printf(" ---Modificar Barcos--- \n");
+	printf("¿Cuantos barcos quiere usar?\n");
+	scanf("%d", config->Tama_flota);
+	config->Tipo_barcos = (char *) realloc(config->Tipo_barcos, config->Tama_flota * sizeof(char));
+	config->Num_barcos = (int *) realloc(config->Tipo_barcos, config->Tama_flota * sizeof(int));
+	
+	printf("Indique el barco que quiere utilizar usando su caracter identificador\n");
+	
+		while(i < config->Tama_flota && contador <= config->Tama_flota){
+			mostrar_barcos();
+			scanf("%c", &placeholder);
+			while(j < config->Tama_flota && contador <= config->Tama_flota){
+				if(placeholder == vb.Barcos[j].Nomb_barco[0]){	
+					encontrado = 1;
+					config.Tipo_barcos[i] = placeholder;
+					printf("Indica el numero de barcos con identificador %c que quiere añadir: \n", placeholder);
+					scanf("%d", &numero_barcos);
+					if(numero_barcos + contador <=  config->Tama_flota){
+						contador = contador + config->numero_barcos;
+						config->Num_barcos[j] = numero_barcos;
+						j++;
+					}else{
+						printf("Supera el limite de los barcos establecidos, vuelva a intentarlo \n");
+					}			
+								
+				if(encontrado = 0){
+					j++;
+				}
+			}
+			if(encontrado = 0){
+				printf("No existe ese barco, vuelva a intentarlo. \n");
+			}else{
+				i++;	
+			}
+		}
+	}
 }
 
 
 void borrar_config(ConfiguracionJuego *config){
+	config->Id_J1 = 0;
 	strcpy(config->Nomb_J1, " ");
 	config->Tipo_disparo_J1 = 'A';
+	config->Num_disparos_J1 = 0;
+	config->Id_J2 = 0;
 	strcpy(config->Nomb_J2, " ");
 	config->Tipo_disparo_J2 = 'A';
+	config->Num_disparos_J2 = 0;
 	config->Tama_tablero = 0;
-	free(config->Tipo_barcos);
-	free(config->num_barcos);
 	config->Tama_flota = 0;
-	strcpy(config->Primer_Jugador, " ");
+	config->Tama_tipos_barco = 0;
+	free(config->Tipo_barcos);
+	free(config->Num_barcos);
+	config->Tama_flota = 0;
 	for (int i = 0; i < config->Tablero_flota1.maxLado; i++) free(config->Tablero_flota1.casillas[i]);
 	free(config->Tablero_flota1.casillas);
 	config->Tablero_flota1.maxLado = 0;
