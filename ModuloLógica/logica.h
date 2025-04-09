@@ -46,7 +46,7 @@ typedef struct{
     char Tipo_disparo;          		//Tipo de disparo seleccionado (A -> Automatico [sistema], M -> Manual [pregunta al jugador])
     int Num_disparos;           		//Contador del numero de disparos de dicho jugador en cada turno
     int Ganador;                		//Indicador de si ha ganado la partida (0 -> Falso, 1 -> Verdadero)
-    int barcos_restantes;               //Contador que decrece en función de los barcos restantes
+    int barcos_restantes;               //Contador que decrece en función de los barcos que faltan por hundir
     Tablero Tablero_flota;       	    //Tablero de la flota del jugador
     Tablero Tablero_oponente;    	    //Tablero del oponente
 }Jugador;

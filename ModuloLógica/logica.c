@@ -472,7 +472,9 @@ void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlParti
         disparo_menu(j,&j->Tablero_oponente, reg_maq);
     }while(reg_maq->esAgua!=true);//Repetir el disparo en caso de acertar
 
-
+    //Gana en este turno?
+    if(j->barcos_restantes==0)
+        j->Ganador=true;
 
     *id = (*id==1) ? 2 : 1; //Cambio de turno (id == identificador jugador)
     
@@ -482,6 +484,7 @@ void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlParti
         scanf("%i", &opcion_salir);
         
     }while((*opcion_salir!=0)&&(*opcion_salir!=1));
+
 }
 
 void salir_partida(ConfiguracionJuego ConfiguracionJuego, ControlPartida ControlPartida){
@@ -535,7 +538,7 @@ void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
         
         // Datos de los jugadores
-        printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.Tama_flota-ControlP.jugador1.barcos_restantes,ControlP.jugador1.barcos_restantes,ControlP.jugador1.Ganador);
+        printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador1.barcos_restantes,ControlP.jugador1.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
         printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.Tama_flota-ControlP.jugador1.barcos_restantes,ControlP.jugador2.barcos_restantes,ControlP.jugador2.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n\n");
@@ -575,8 +578,8 @@ void buscarNcasillas(Tablero t, int *valor, char c){
 void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco){
 
         printf("%s: Introduce un carácter para elegir modo de colocación de barcos\n", pj->Nomb_jugador);
-        
-        while(1) {
+        int flag_valid_b=0;
+        do{
 
             printf("'M' == Manual    'A' == Automático");
             scanf("%c",&eleccion_barco);
@@ -591,18 +594,21 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
             {
             case 'M':
                 colocarManual(pj,vectBarcos);
+                flag_valid_b=1;
                 break;
 
 
             case 'A':
                 colocarAleatorio(pj);
+                flag_valid_b=1;
                 break;
 
             default:
                 printf("No se reconoce el carácter\n");
+                flag_valid_b=0;
                 break;
             }
-        }
+        }while(!flag_valid_b);
 }
 
 
