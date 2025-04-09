@@ -348,6 +348,9 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 printf("¡Has hundido un barco!\n");
                 sleep(3);
                 system("cls");
+
+                j->barcos_restantes--;
+
                 mostrarOponente(j);
 
                 
@@ -414,7 +417,7 @@ char eleccion_barco_j1, eleccion_barco_j2;
     f_eleccion_barcos(&j1,Vector_Barcos_L,eleccion_barco_j1);
     f_eleccion_barcos(&j2,Vector_Barcos_L,eleccion_barco_j2);
     
-    int opcion_salir; //Variable booleana
+    //int opcion_salir; //Variable booleana
     int id = j1->Id_jugador; //Comienza siempre el jugador 1
 
     flujoPartida(ConfiguracionJuego_L, &reg_maquina, ControlPartida_L);
@@ -435,15 +438,15 @@ void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg
         else
             f_turno(&j2, &reg_maquina, &ControlPartida);
 
-    }else{ if(j1.barcos_restantes+j2.barcos_restantes==1){
+    }else{
 
         if(id==2) //¿Posible empate?
             
-        f_turno(&j2, &reg_maquina, &ControlPartida);
+            f_turno(&j2, &reg_maquina, &ControlPartida);
 
         }
         fin_partida(ConfiguracionJuego_L,ControlPartida);
-    }
+    
     }while(ControlPartida.opcion_salir);
 
 
