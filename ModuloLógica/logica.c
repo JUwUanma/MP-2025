@@ -350,6 +350,9 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 printf("¡Has hundido un barco!\n");
                 sleep(3);
                 system("cls");
+
+                j->barcos_restantes--;
+
                 mostrarOponente(j);
 
                 
@@ -415,7 +418,7 @@ char eleccion_barco_j1, eleccion_barco_j2;
     f_eleccion_barcos(&j1,Vector_Barcos_L,eleccion_barco_j1);
     f_eleccion_barcos(&j2,Vector_Barcos_L,eleccion_barco_j2);
     
-    int opcion_salir; //Variable booleana
+    //int opcion_salir; //Variable booleana
     int id = j1->Id_jugador; //Comienza siempre el jugador 1
 
     flujoPartida(ConfiguracionJuego_L, &reg_maquina, ControlPartida_L);
@@ -438,13 +441,18 @@ void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg
 
     }else{
 
+<<<<<<< HEAD
         if(id==1) //¿Posible empate?
             f_turno(&j1, &reg_maquina, &ControlPartida);
         else
+=======
+        if(id==2) //¿Posible empate?
+            
+>>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
             f_turno(&j2, &reg_maquina, &ControlPartida);
 
         fin_partida(ConfiguracionJuego_L,ControlPartida);
-    }
+    
     }while(ControlPartida.opcion_salir);
 
 
@@ -470,7 +478,9 @@ void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlParti
         disparo_menu(j,&j->Tablero_oponente, reg_maq);
     }while(reg_maq->esAgua!=true);//Repetir el disparo en caso de acertar
 
-
+    //Gana en este turno?
+    if(j->barcos_restantes==0)
+        j->Ganador=true;
 
     *id = (*id==1) ? 2 : 1; //Cambio de turno (id == identificador jugador)
     
@@ -480,6 +490,7 @@ void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlParti
         scanf("%i", &opcion_salir);
         
     }while((*opcion_salir!=0)&&(*opcion_salir!=1));
+
 }
 
 void salir_partida(ConfiguracionJuego ConfiguracionJuego, ControlPartida ControlPartida){
@@ -513,7 +524,11 @@ void fin_partida(ConfiguracionJuego config, ControlPartida ControlP){
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
         
         // Datos de los jugadores
+<<<<<<< HEAD
         printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.num_barcos-ControlP.jugador1.nBarcos,ControlP.jugador1.nBarcos,ControlP.jugador1.Ganador);
+=======
+        printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador1.barcos_restantes,ControlP.jugador1.Ganador);
+>>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
         printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.num_barcos-ControlP.jugador2.nBarcos,ControlP.jugador2.nBarcos,ControlP.jugador2.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n\n");
@@ -556,6 +571,7 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
     do{
 
         printf("%s: Introduce un carácter para elegir modo de colocación de barcos\n", pj->Nomb_jugador);
+<<<<<<< HEAD
         printf("'M' == Manual    'A' == Automático");
         
         scanf("%c",&eleccion_barco);
@@ -564,6 +580,10 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
         }while(eleccion_barco!='M'||eleccion_barco!='A');
     
         if(eleccion_barco=='M'){
+=======
+        int flag_valid_b=0;
+        do{
+>>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
 
             colocarManual(pj,vectBarcos);
         
@@ -571,9 +591,31 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
 
             colocarAleatorio(pj);
 
+<<<<<<< HEAD
         }
         
 
+=======
+            switch (eleccion_barco)
+            {
+            case 'M':
+                colocarManual(pj,vectBarcos);
+                flag_valid_b=1;
+                break;
+
+
+            case 'A':
+                colocarAleatorio(pj);
+                flag_valid_b=1;
+                break;
+
+            default:
+                printf("No se reconoce el carácter\n");
+                flag_valid_b=0;
+                break;
+            }
+        }while(!flag_valid_b);
+>>>>>>> df7ea46826d6a07f9d13a949c63e1b38efe9537a
 }
 
 
