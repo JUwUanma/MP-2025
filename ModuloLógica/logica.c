@@ -545,7 +545,7 @@ void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
         // Datos de los jugadores
         printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador1.barcos_restantes,ControlP.jugador1.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
-        printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.num_barcos-ControlP.jugador2.nBarcos,ControlP.jugador2.nBarcos,ControlP.jugador2.Ganador);
+        printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador2.nBarcos,ControlP.jugador2.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n\n");
     
         sleep(8);//Cambiar por "pulse para mostrar lo siguiente"
@@ -583,18 +583,14 @@ void buscarNcasillas(Tablero t, int *valor, char c){
 
 void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco){
 
+    int flag_valid_b=0;
+
     do{
 
         printf("%s: Introduce un carácter para elegir modo de colocación de barcos\n", pj->Nomb_jugador);
-        int flag_valid_b=0;
-        do{
-
-            colocarManual(pj,vectBarcos);
+        scanf("%c", eleccion_barco);
         
-        }else{
-
-            colocarAleatorio(pj);
-
+        
             switch (eleccion_barco)
             {
             case 'M':
@@ -614,8 +610,7 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
                 break;
             }
         }while(!flag_valid_b);
-    }
-
+    
 }
 
 
@@ -655,7 +650,6 @@ void guardar_jugadores(Jugador j1, Jugador j2, ConfiguracionJuego *config){
     config->Tablero_oponente1 = j1.Tablero_oponente;
     config->Tablero_oponente2 = j2.Tablero_oponente;
 
-    //guardar n de disparos
 
 }
 

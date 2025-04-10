@@ -80,6 +80,11 @@ Q: Recorre el barco empezando desde x,y y comprueba si las casillas entre T_Flot
 cómo disparadas y que haya un barco, si es así --> true, sino --> false*/
 int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y);
 
+
+
+
+
+
 //FUNCIONES DE DESARROLLO DE LA PARTIDA
 
 //Pre: Ninguna
@@ -105,6 +110,7 @@ void salir_partida(ConfiguracionJuego ConfiguracionJuego, ControlPartida Control
 
 
 void fin_partida(ConfiguracionJuego config, ControlPartida ControlP);
+
 
 void buscarNcasillas(Tablero t, int *valor, char c);
 
