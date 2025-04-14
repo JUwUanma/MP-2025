@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h> //sleep(tiempo)
+#include <windows.h> //Sleep(tiempo)
 #include "logica.h"
 #include "..\\ModuloMemoria\Datos.h"
 #include "..\\ModuloTablero\Tablero.h"
@@ -176,6 +176,7 @@ void dispararAleatorio(Tablero* T_Receive, Tablero* T_Shoot, Registro_Maquina* r
     }
 }
 
+/*TODO?: Cambiar modo de disparo a tablero visual?*/
 
 disparoManual(Tablero *t, Registro_Maquina *reg_maq){
     //Inicializa coordenadas y si la coordenada es válida
@@ -208,7 +209,7 @@ disparoManual(Tablero *t, Registro_Maquina *reg_maq){
 
 
 
-void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
+int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq){
     
     int resultado_disparo;
     int x,y;
@@ -307,7 +308,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                     printf("|_| |_|\\___/ \\___\\__,_|\\__,_|\\___/(_)\n");
                     printf("¡Has tocado un barco!\n");
 
-                sleep(3);
+                Sleep(3);
                 system("cls");
                 mostrarOponente(j);
                 }
@@ -348,7 +349,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 printf("░█▀█░█░█░█░█░█░█░░█░░█░█░█░█░▀\n");
                 printf("░▀░▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀▀░░▀▀▀░▀\n");
                 printf("¡Has hundido un barco!\n");
-                sleep(3);
+                Sleep(3);
                 system("cls");
 
                 j->barcos_restantes--;
@@ -368,7 +369,7 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
                 printf(" | | |  | | (_| \\__ \\ | || (_| | | | (_| | (_| | (_) |_|\n");
                 printf(" |_|_|  |_|\\__,_|___/ |_| \\__,_|_|_|\\__,_|\\__,_|\\___/(_)\n");
                 printf("Has tocado agua.\n");
-                sleep(3);
+                Sleep(3);
                 system("cls");
                 mostrarOponente(j);
 
@@ -376,6 +377,8 @@ void disparo_menu(Jugador *j,Tablero *t, Registro_Maquina *reg_maq){
 
             (j->Num_disparos)++;
     }
+
+    return resultado_disparo; //PROVISIONAL
     
 }
 
@@ -424,71 +427,97 @@ char eleccion_barco_j1, eleccion_barco_j2;
     flujoPartida(ConfiguracionJuego_L, &reg_maquina, ControlPartida_L);
 }
 
-void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg_maquina, ControlPartida ControlPartida){
+int flujoPartida(ConfiguracionJuego config, Registro_Maquina *reg_maquina, ControlPartida* partida){
 
-    int opcion_salir = ControlPartida.opcion_salir; //Variable booleana
-    int id = 1;//ControlPartida.id; //Recupera el turno que tocaba en la partida
-    Jugador j1 = ControlPartida.jugador1;
-    Jugador j2 = ControlPartida.jugador2;
+    char charBuffer;
+    int flagStopGame = false;
+    Jugador j1 = partida->jugador1;
+    Jugador j2 = partida->jugador2;
+
+
 
     do{ //Bucle principal del juego
-    if(!j2.Ganador||!j1.Ganador){ //¿Ya hay ganador?
+        partida->id_turno = 1; //Al comenzar una ronda siempre comienza el J1
 
-        if(id==1) //¿De quién es el turno?
-            f_turno(&j1, &reg_maquina, &ControlPartida);
-        else
-            f_turno(&j2, &reg_maquina, &ControlPartida);
+        system("cls");
+        printf("\n-----RONDA %d-----\n", partida->n_ronda);
+        f_turno(&j1, &reg_maquina, &config, &partida); //Al comienzo de una ronda siempre empieza J1
+        f_turno(&j2, &reg_maquina, &config, &partida); //No importa lo que pase, siempre juega tambien J2
 
-            //Fin de ronda, ¿salir de la partida?
-            printf("¿Quieres seguir jugando? (Pulsa la opción que desees)?:\nSí: [1]\nNo: [0]\n");
-        do{
+        //Hay un ganador? 
+        if(partida->hayGanador == NO_FINALIZADA){
+            printf("\nRonda terminada. ¿Quieres guardar la partida? [Y/N]\n");
+            scanf("%c", &charBuffer);
 
-            scanf("%i", &opcion_salir);
+            if(respuesta(charBuffer)){
+                system("cls");
+                printf("Guardando partida...");
+                //guardarPartida();
+                flagStopGame = true;
+            }else{
+                partida->n_ronda++;
+            }
 
-            if(opcion_salir == 0)
-                salir_partida(ConfiguracionJuego_L, ControlPartida);
+        //Hay (al menos) un ganador
+        }else{
+            system("cls");
+            printf("-----PARTIDA TERMINADA-----\n\n");
+            if(partida->hayGanador == EMPATE){
+                printf("Ha sido un empate! Bien jugado!");
+            }else{
+                printf("Ha ganado el jugador %d! Enhorabuena! WP\n\n", partida->hayGanador);
+            }
+            flagStopGame = true;
+        }
+       
 
-
-        }while((opcion_salir!=0)&&(opcion_salir!=1));
-
-    }else{
-
-        if(id==2) //¿Posible empate?
-            
-            f_turno(&j2, &reg_maquina, &ControlPartida);
-
-        fin_partida(ConfiguracionJuego_L,ControlPartida);
     
-    }}while(ControlPartida.opcion_salir);
+    }while(!flagStopGame);
 
 
 salir_partida(ConfiguracionJuego_L, ControlPartida);
+return (partida->hayGanador != NO_FINALIZADA);
 
 
 }
 
-void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlPartida){
+void f_turno(Registro_Maquina *reg_maq, ControlPartida *partida)
+{
 
-    int *id = ControlPartida->id;
-    int *opcion_salir = ControlPartida->opcion_salir;
+    int flagResShot;
+    Jugador *J_Turno; //Puntero al jugador que tiene el turno
+    Jugador *J_Oponente; //Puntero al jugador oponente al del turno
 
-    Tablero tablero = j->Tablero_oponente;
+    if(partida->id_turno == 1){
+        *J_Turno = partida->jugador1;
+        *J_Oponente = partida->jugador2;
+    }else{
+        *J_Turno = partida->jugador2;
+        *J_Oponente = partida->jugador1;
+    }
 
 
-    printf("Es el turno de %s\n", j->Nomb_jugador);
-    sleep(3);
+    printf("\n\nEs el turno de %s\n\n", J_Turno->Nomb_jugador);
+    Sleep(3);
     system("cls");
     
     do{
         
-        disparo_menu(j,&j->Tablero_oponente, reg_maq);
-    }while(reg_maq->esAgua!=true);//Repetir el disparo en caso de acertar
+        //El jugador dispara, si acierta, puede volver a disparar
+        if(flagResShot = disparo_menu(&J_Turno, &J_Oponente, &reg_maq) != AGUA){
+            printf("\n\n¡Has acertado! Puedes volver a disparar");
+            Sleep(3);
+        }
+
+    }while(flagResShot != AGUA);//Repetir el disparo en caso de acertar
 
     //Gana en este turno?
-    if(j->barcos_restantes==0)
-        j->Ganador=true;
+    if(partida->nBarcosRestantes[partida->id_turno] == 0){
+        J_Turno->Ganador = true;
+        partida->hayGanador = partida->hayGanador == 0 ? partida->id_turno : EMPATE; //Si ya ha ganado alguien y gana este turno -> EMPATE
+    }
 
-    *id = (*id==1) ? 2 : 1; //Cambio de turno (id == identificador jugador)
+    partida->id_turno = partida->id_turno == 1 ? 2 : 1;   //Cambio de turno
 
 }
 
@@ -548,13 +577,13 @@ void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
         printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador2.nBarcos,ControlP.jugador2.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n\n");
     
-        sleep(8);//Cambiar por "pulse para mostrar lo siguiente"
+        Sleep(8);//Cambiar por "pulse para mostrar lo siguiente"
 
         printf("Jugador 1: \n");
         mostrarFlota(&ControlP.jugador1);
         mostrarOponente(&ControlP.jugador1);
 
-        sleep(8);
+        Sleep(8);
 
 
         printf("Jugador 2: \n");

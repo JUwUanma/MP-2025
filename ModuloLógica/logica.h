@@ -8,6 +8,7 @@
 
 
 enum TIPO_DISPARO {AGUA, TOCADO, HUNDIDO};
+enum ESTADOS_PARTIDA {NO_FINALIZADA, GANA_J1, GANA_J2, EMPATE};
 
 //Funciones:
 
@@ -32,9 +33,11 @@ typedef struct{
 
 typedef struct{
 
-    int id;
-    int opcion_salir;
-    Jugador jugador1;
+    int id_turno;                       //Turno actual -> Sólo para f_turno, al cargar partida siempre empieza J1
+    int n_ronda;                        //Número de rondas jugadas
+    int nBarcosRestantes[3];            //Vector estática que almacena los barcos restantes POR DISPARAR de cada jugador [1]: J1, [2]: J2, [0]: N/A        
+    int hayGanador;                     //0 si NO hay ganador, 1 si J1 es ganador, 2 si J2 es ganador, 3 si empate.
+    Jugador jugador1;                   
     Jugador jugador2;
 
 }ControlPartida;
@@ -66,7 +69,9 @@ En todos los casos se guarda en T_Shoot la información resultante.
 */
 int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y);
 
-void disparo_menu(Jugador *j, Tablero *t, Registro_Maquina *reg_maq);
+
+/*REFACTORIZAR*/
+int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq);
 
 /*P: Tableros y registros máquinas existen
 - T_Receive: TABLERO FLOTA AL QUE SE DISPARA
@@ -93,17 +98,21 @@ void reiniciarPartida();
 
 void continuarPartida();
 
-void flujoPartida(ConfiguracionJuego ConfiguracionJuego_L, Registro_Maquina *reg_maquina, ControlPartida ControlPartida);
 
+/*P: Todos los registros cargados e inicializados
+Q: Realiza el flujo normal de partida. Devuelve 1 si se ha terminado, 0 si no. Los datos de partida están en partida*/
+int flujoPartida(ConfiguracionJuego* config, Registro_Maquina *reg_maquina, ControlPartida* partida);
 
-
+/*P: Todos los registros cargados e inicializados
+Q: Realiza un turno normal del jugador j, cambia partida->hayGanador si no quedan barcos restantes por hundir del oponente*/
+void f_turno(Registro_Maquina *reg_maq, ControlPartida *partida);
 
 /*Precondición: Recibe un puntero a estructura de un jugador, el vector de barcos cargado y la elección del jugador
 Postcondición: Ejecuta la acción de colocar barcos en función del modo escogido*/
 void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco);
 
 
-void f_turno(Jugador* j, Registro_Maquina *reg_maq, ControlPartida *ControlPartida);
+
 
 
 void salir_partida(ConfiguracionJuego ConfiguracionJuego, ControlPartida ControlPartida);

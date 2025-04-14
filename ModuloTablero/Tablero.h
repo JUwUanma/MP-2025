@@ -20,6 +20,11 @@ enum orientacion {G0, G45, G90, G135, G180, G225, G270, G315};
 //Dirección de rotación -> rotar()
 enum direccion {IZQUIERDA, DERECHA};
 
+/*P: n > 0
+Q: Salta n número de líneas
+*/
+inline void jump(int n);
+
 //Devuelve 1 si se ha respondido Y o y
 //Devuelve 0 si se ha respondido N o n
 //Vuelve a preguntar hasta que se hayan introducido alguno de esos valores

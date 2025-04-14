@@ -6,7 +6,7 @@ static void compactarVector(Vector_Barcos* vect, int barcoSeleccionado, int nBar
 static int colocacionBarco(Barco* B, Jugador* j);
 static int colocarBarco(Tablero* T, Barco* B, int x, int y, int orient);
 
-inline static void jump(int j){for(int i=0; i<j; i++) printf("\n");}
+inline void jump(int j){for(int i=0; i<j; i++) printf("\n");}
 //Devuelve 1 si se ha respondido N o n, y 0 sino.
 inline static int exit(char c){if(c == 'N' || c == 'n') return 1; else return 0;}
 //Devuelve 1 si se ha pulsado charToCompare EN MAYÚSUCULA o en minúscula, y 0 sino.
