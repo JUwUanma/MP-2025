@@ -57,6 +57,10 @@ Devuelve 1 si se ha colocado correctamente, 0 sino.
 ENUM: FLOTA(0) OPONENTE(1)*/
 int colocarCasilla(char c, Tablero* T, int x, int y);
 
+/*P: Tablero creado, caracter válido, nCasillas, x, y dentro de tablero
+Q: Rellena nCasillas del tablero T con el caracter c desde la casilla x, y con orientacion orient*/
+void rellenarCasillas(Tablero* T, char c, int nCasillas, int orient, int x, int y);
+
 /*P: Existe el tablero T. 0 <= x,y < maxLado
 Q: Devuelve lo que hay en la casilla [x,y] del jugador j del tablero indicado
 ENUM: FLOTA(0) OPONENTE(1)*/

@@ -9,59 +9,6 @@
 
 static int isExtremo(Tablero* T_Flota, int x, int y, int orient);
 
-int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y)
-{
-    char charBuffer = devolverCasilla(T_Receive, x, y); //Buffer para no llamar a la función dos veces
-
-    if(charBuffer == ' ' || charBuffer == '0'){ //Si está vacía (o casilla ocupada) devuelve AGUA
-        return AGUA;
-    }else{//Sino, recorre el barco, si se ha recorrido por completo -> HUNDIDO, sino -> TOCADO
-        return (recorrerBarco(T_Receive, T_Shoot, x, y) ? HUNDIDO : TOCADO);
-    }
-}
-
-int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y)
-{
-    int orient = G0;
-    int xIni = x, yIni = y;
-    int cont = 0; //Contador para saber si es un barco de única casilla
-    int flagHundido = false;
-    char charBufferFlota;
-    char charBufferOpon;
-
-    moverAOrientacion(T_Flota, orient, &x, &y);
-
-    //Mientras no encuentre la orientación del barco o, en su defecto, no la encuentra
-    while(cont != (G315 + 1) && devolverCasilla(T_Flota, x, y) != 'X'){
-        x = xIni; y = yIni; //Reinicia la posición
-        rotar(&orient, G45, IZQUIERDA); //Rota a la siguiente orientación
-        moverAOrientacion(T_Flota, orient, &x, &y);
-        cont++;
-    }
-
-    //No se ha encontrado la orientación, es decir, es una casilla única --> HUNDIDO
-    if(cont == G315 + 1) return true;
-
-    //¿[x,y] está en un extremo del barco?
-    while(!isExtremo(T_Flota, x, y, orient)){
-        moverAOrientacion(T_Flota, orient, &x, &y);
-    }
-
-    rotar(&orient, 180, IZQUIERDA);
-
-    do{
-        moverAOrientacion(T_Flota, orient, &x, &y);
-        charBufferFlota = devolverCasilla(T_Flota, x, y);
-        charBufferOpon = devolverCasilla(T_Oponente, x, y);
-
-        //¿Son ' ' en sus respectivos tableros?
-        if(charBufferFlota == ' ' || charBufferFlota == '0' && charBufferOpon == ' ') return true;
-        if(charBufferFlota != 'X' || charBufferOpon != 'T') return false;
-                //Nota: No la mejor implementación pero en principio funciona
-    }while(true);
-
-}
-
 /*P: Tablero existe, y orient es la orientación del barco, x, y dentro de tablero
 Q: Devuelve true si la casilla se encuentra en un extremo del barco, es decir,
 en la orientación dada, hay una casilla en un sentido y no en el contrario.
@@ -83,7 +30,94 @@ static int isExtremo(Tablero* T_Flota, int x, int y, int orient)
     return (charBuffer != devolverCasilla(T_Flota, xIni, yIni));
 }
 
-void dispararAleatorio(Tablero* T_Receive, Tablero* T_Shoot, Registro_Maquina* reg)
+int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y)
+{
+    char charBuffer = devolverCasilla(T_Receive, x, y); //Buffer para no llamar a la función dos veces
+    int resBarco;
+
+    if(charBuffer == ' ' || charBuffer == '0'){ //Si está vacía (o casilla ocupada) devuelve AGUA
+        resBarco = AGUA;
+
+    }else{//Sino, recorre el barco, si se ha recorrido por completo -> HUNDIDO, sino -> TOCADO
+        colocarCasilla('T', T_Shoot, x, y);
+        resBarco = recorrerBarco(T_Receive, T_Shoot, x, y) ? HUNDIDO : TOCADO;
+
+        //Si lo ha hundido, hay que marcarlo como tal en T_Shoot
+        if(resBarco == HUNDIDO){
+            int xBarco, yBarco, orientBarco;
+            orientBarco = encontrarOrientacion(&T_Receive, xBarco, yBarco); //Encuentra la orientación del barco
+            encontrarExtremo(&T_Receive, &xBarco, &yBarco, orientBarco); //Encuentra el extremo
+            
+            rotar(&orientBarco, G180, DERECHA);
+
+            //Hasta que encuentre el otro extremo del barco, coloca casillas y sus adyacentes
+            do{
+                colocarCasilla('H', &T_Shoot, x, y);
+                colocarAdyacentes(&T_Shoot, x, y, 'H', '*');
+                moverAOrientacion(&T_Shoot, orientBarco, &x, &y);
+                
+            }while(!isExtremo(&T_Receive, x, y, orientBarco));
+        }
+    }
+    
+    return resBarco;
+}
+
+int encontrarOrientación(Tablero* T_Flota, int x, int y)
+{
+    int orient = G0;
+    int xIni = x, yIni = y;
+    int cont = 0; //Contador para saber si es un barco de única casilla
+
+    moverAOrientacion(T_Flota, orient, &x, &y);
+
+    //Mientras no encuentre la orientación del barco o, en su defecto, no la encuentra
+    while(cont != (G315 + 1) && devolverCasilla(T_Flota, x, y) != 'X'){
+        x = xIni; y = yIni; //Reinicia la posición
+        rotar(&orient, G45, IZQUIERDA); //Rota a la siguiente orientación
+        moverAOrientacion(T_Flota, orient, &x, &y);
+        cont++;
+    }
+
+    if(cont == G315 + 1) return cont;
+    else return orient;
+}
+
+void encontrarExtremo(Tablero* T_Flota, int* x, int* y, int orient)
+{
+     //¿[x,y] está en un extremo del barco?
+     while(!isExtremo(T_Flota, x, y, orient)){
+        moverAOrientacion(T_Flota, orient, &x, &y);
+    }
+}
+
+int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y)
+{
+    int flagHundido = false;
+    char charBufferFlota;
+    char charBufferOpon;
+
+    int orient = encontrarOrientación(&T_Flota, x, y);
+    if(orient == G315+1) return true;
+
+    encontrarExtremo(&T_Flota, &x, &y, orient);
+    rotar(&orient, 180, IZQUIERDA);
+
+    do{
+        moverAOrientacion(T_Flota, orient, &x, &y);
+        charBufferFlota = devolverCasilla(T_Flota, x, y);
+        charBufferOpon = devolverCasilla(T_Oponente, x, y);
+
+        //¿Son ' ' en sus respectivos tableros?
+        if(charBufferFlota == ' ' || charBufferFlota == '0' && charBufferOpon == ' ') return true;
+        if(charBufferFlota != 'X' || charBufferOpon != 'T') return false;
+                //Nota: No la mejor implementación pero en principio funciona
+    }while(true);
+
+}
+
+
+int dispararAleatorio(Tablero* T_Receive, Tablero* T_Shoot, Registro_Maquina* reg)
 {
     int resDisparo;
     int xAux = reg->x_maq;
@@ -174,11 +208,13 @@ void dispararAleatorio(Tablero* T_Receive, Tablero* T_Shoot, Registro_Maquina* r
             
         }
     }
+
+    return resDisparo;
 }
 
 /*TODO?: Cambiar modo de disparo a tablero visual?*/
 
-disparoManual(Tablero *t, Registro_Maquina *reg_maq){
+int dispararManual(Tablero *T_Receive, Tablero* T_Shoot){
     //Inicializa coordenadas y si la coordenada es válida
     int x=0, y=0;
     int flagValidPosition = false;
@@ -188,198 +224,83 @@ disparoManual(Tablero *t, Registro_Maquina *reg_maq){
         puts("Introduce unas coordenadas (X,Y) para disparar.");
         scanf("%i %i",&x, &y);
         
-            if(x > 0 && x <= t->maxLado && y > 0 && y <= t->maxLado) {
+            if(x > 0 && x < t->maxLado && y > 0 && y < t->maxLado) {
             //Verificar que la casilla no haya sido disparada antes
-                if(t->casillas[x-1][y-1] == ' ') { //Resta 1 porque los vectores empiezan en 0
-                    flagValidPosition = 1;
-                } else {
-
+                if(t->casillas[x][y] == ' ') {
+                    flagValidPosition = true;
+                }else{
                     printf("Ya has disparado a esta posición (%d,%d). Intenta otra.\n", x, y);
-                
                 }
             } else {
                 puts("Coordenadas no válidas. Deben estar dentro del rango del tablero.");
             }
         }while(flagValidPosition!=1);
 
-        //Guarda las coordenadas en el registro
-        reg_maq->x_maq=x;
-        reg_maq->y_maq=y;
+        return disparo();
+
 }
 
 
 
 int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq){
     
-    int resultado_disparo;
+    int resDisparo;
     int x,y;
     int long_barco=0;
 
-    if(j->Tipo_disparo=='M'){
-        
-        disparoManual(t,reg_maq);
-        
-    }
-    else{ //Bloque de disparo automático
+    Tablero* T_Receive = J_Receive->Tablero_flota;
+    Tablero* T_Shoot = J_Shoot->Tablero_oponente;
 
-            //do{
-            srand(time(NULL));              //Semilla generada a partir de la hora actual
-            //x=rand() % (t->maxLado + 1);       //Número aleatorio entre 0 y xMax
-            //y=rand() % (t->maxLado + 1);       //Igual pero con y
-            
-            //}while(t->casillas[x][y]!=' '); //t->casillas puede que lo cambie por otra función
-    
-            disparoAleatorio(t, reg_maq);
-    
-        }
-        //Recupera las coordenadas guardadas de otras funciones
-    x=reg_maq->x_maq;
-    y=reg_maq->y_maq;
-
-            if (devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)=='X'){//Caso de que haya tocado un barco
-
-
-                printf("¡¡Has acertado!!");
-                reg_maq->esAgua=false;
-
-                //Recorre el barco para comprobar si está hundido o solo tocado
-                while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
-                    
-                    
-                    moverAOrientacion(t, reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
-
-
-                }
-                //Dar media vuelta para rellenar casillas
-                int orient_op;//Variable para guardar la dirección opuesta
-                if(reg_maq->orient_maq<=4){
-
-                    orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
-
-                }else{
-
-                    orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
-
-                }
-                
-                //Volver a recorrerlo para ver su longitud
-                while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
-                    
-                    
-                    moverAOrientacion(t,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
-                    long_barco++;
-
-                }
-
-                //Vuelve a dar media vuelta
-                if(reg_maq->orient_maq<=4){
-
-                    orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
-
-                }else{
-
-                    orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
-
-                }
-                
-                for(int i=0; i<long_barco; i++){
-
-
-                    moverAOrientacion(t,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
-
-                    if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)==' '){
-
-                        resultado_disparo=TOCADO;
-                        i=long_barco;
-                    }
-                    else{
-
-                        resultado_disparo=HUNDIDO;
-
-                    }
-                }
-
-                if (resultado_disparo==1){//El barco solo está tocado
-                colocarCasilla('T', t, reg_maq->x_maq, reg_maq->y_maq);
-                    printf("_ _____                   _       _ \n");
-                    printf("(_)_   _|__   ___ __ _  __| | ___ | |\n");
-                    printf("| | | |/ _ \\ / __/ _` |/ _` |/ _ \\| |\n");
-                    printf("| | | | (_) | (_| (_| | (_| | (_) |_|\n");
-                    printf("|_| |_|\\___/ \\___\\__,_|\\__,_|\\___/(_)\n");
-                    printf("¡Has tocado un barco!\n");
-
-                Sleep(3);
-                system("cls");
-                mostrarOponente(j);
-                }
-            
-            else{//Caso de que barco esté hundido
-                    
-                    //Recorrer barco hasta el inicio de este
-                    while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*'){
-                    
-                    
-                        moverAOrientacion(t,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
-
-
-                    }
-                    //Dar media vuelta para rellenar casillas
-                    int orient_op;//Variable para guardar la dirección opuesta
-                    if(reg_maq->orient_maq<=4){
-
-                        orient_op=reg_maq->orient_maq+4;//Si la orientación no es mayor de 180º, suma 180ª para dar la vuelta
-
-                    }else{
-
-                        orient_op=reg_maq->orient_maq-4;//Si la orientación es mayor de 180º, resta 180ª para dar la vuelta
-
-                    }
-
-                    do{
-                    
-                        moverAOrientacion(t,reg_maq->orient_maq, &reg_maq->x_maq, &reg_maq->y_maq);
-
-                        if(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*') //Doble seguridad para que no se rellenen casillas de más
-                        colocarAdyacentes(t, reg_maq->x_maq, reg_maq->y_maq, '*', 'H');
-                    
-                    }while(devolverCasilla(t,reg_maq->x_maq,reg_maq->y_maq)!='*');
-
-                system("cls");
-                printf("░█░█░█░█░█▀█░█▀▄░▀█▀░█▀▄░█▀█░█\n");
-                printf("░█▀█░█░█░█░█░█░█░░█░░█░█░█░█░▀\n");
-                printf("░▀░▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀▀░░▀▀▀░▀\n");
-                printf("¡Has hundido un barco!\n");
-                Sleep(3);
-                system("cls");
-
-                j->barcos_restantes--;
-
-                mostrarOponente(j);
-
-                
-            }
-            }else{
-                reg_maq->esAgua=true;
-                system("cls");
-                colocarCasilla('*', t, x, y);
-                printf("  _ _    _              __      _ _           _       _ \n");
-                printf(" (_) |  | |            / _|    | | |         | |     | |\n");
-                printf(" | | |__| | __ _ ___  | |_ __ _| | | __ _  __| | ___ | |\n");
-                printf(" | |  __  |/ _` / __| |  _/ _` | | |/ _` |/ _` |/ _ \\| |\n");
-                printf(" | | |  | | (_| \\__ \\ | || (_| | | | (_| | (_| | (_) |_|\n");
-                printf(" |_|_|  |_|\\__,_|___/ |_| \\__,_|_|_|\\__,_|\\__,_|\\___/(_)\n");
-                printf("Has tocado agua.\n");
-                Sleep(3);
-                system("cls");
-                mostrarOponente(j);
-
-            
-
-            (j->Num_disparos)++;
+    if(J_Shoot->Tipo_disparo == 'M'){
+        resDisparo = disparoManual();
+    }else{
+        resDisparo = dispararAleatorio(&T_Receive, &T_Shoot);
     }
 
-    return resultado_disparo; //PROVISIONAL
-    
+    if (resDisparo == TOCADO){//Caso de que haya tocado un barco
+
+        system("cls");
+        printf("_ _____                   _       _ \n");
+        printf("(_)_   _|__   ___ __ _  __| | ___ | |\n");
+        printf("| | | |/ _ \\ / __/ _` |/ _` |/ _ \\| |\n");
+        printf("| | | | (_) | (_| (_| | (_| | (_) |_|\n");
+        printf("|_| |_|\\___/ \\___\\__,_|\\__,_|\\___/(_)\n");
+        printf("\n\n¡Has tocado un barco!\n");
+
+        Sleep(3);
+        system("cls");
+        mostrarOponente(J_Shoot);
+
+    }else if(resDisparo == HUNDIDO){//Caso de que barco esté hundido
+            
+        system("cls");
+        printf("░█░█░█░█░█▀█░█▀▄░▀█▀░█▀▄░█▀█░█\n");
+        printf("░█▀█░█░█░█░█░█░█░░█░░█░█░█░█░▀\n");
+        printf("░▀░▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀▀░░▀▀▀░▀\n");
+        printf("\n\n¡Has hundido un barco!\n");
+
+        Sleep(3);
+        system("cls");
+        mostrarOponente(J_Shoot);
+
+    }else{
+
+        system("cls");
+        printf("  _ _    _              __      _ _           _       _ \n");
+        printf(" (_) |  | |            / _|    | | |         | |     | |\n");
+        printf(" | | |__| | __ _ ___  | |_ __ _| | | __ _  __| | ___ | |\n");
+        printf(" | |  __  |/ _` / __| |  _/ _` | | |/ _` |/ _` |/ _ \\| |\n");
+        printf(" | | |  | | (_| \\__ \\ | || (_| | | | (_| | (_| | (_) |_|\n");
+        printf(" |_|_|  |_|\\__,_|___/ |_| \\__,_|_|_|\\__,_|\\__,_|\\___/(_)\n");
+        printf("\n\nHas tocado agua.\n");
+        Sleep(3);
+        system("cls");
+        mostrarOponente(J_Shoot);
+
+    }
+
+    J_Shoot->Num_disparos++;
+    return resDisparo; //PROVISIONAL
 }
 
 
@@ -427,7 +348,7 @@ char eleccion_barco_j1, eleccion_barco_j2;
     flujoPartida(ConfiguracionJuego_L, &reg_maquina, ControlPartida_L);
 }
 
-int flujoPartida(ConfiguracionJuego config, Registro_Maquina *reg_maquina, ControlPartida* partida){
+int flujoPartida(ConfiguracionJuego* config, Registro_Maquina *reg_maquina, ControlPartida* partida){
 
     char charBuffer;
     int flagStopGame = false;
@@ -507,6 +428,8 @@ void f_turno(Registro_Maquina *reg_maq, ControlPartida *partida)
         if(flagResShot = disparo_menu(&J_Turno, &J_Oponente, &reg_maq) != AGUA){
             printf("\n\n¡Has acertado! Puedes volver a disparar");
             Sleep(3);
+
+            if(flaResShot == HUNDIDO) partida->nBarcosRestantes[partida->id_turno]--;
         }
 
     }while(flagResShot != AGUA);//Repetir el disparo en caso de acertar

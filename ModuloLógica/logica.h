@@ -69,25 +69,38 @@ En todos los casos se guarda en T_Shoot la información resultante.
 */
 int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y);
 
-
-/*REFACTORIZAR*/
+/*P: Jugadores creados y registro máquina inicializado
+Q: Según el tipo de disparo del jugador Shoot, entra en el menú de disparo y devuelve el resultado
+del disparo contra el jugador J_Receive, en disparos aleatorios se utiliza Registro_Maquina, en
+manuales no.*/
 int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq);
+
+/*P: Tableros existen
+- T_Receive: TABLERO FLOTA AL QUE SE DISPARA
+- T_Shoot: TABLERO OPONENTE EN EL QUE SE REGISTRA EL DISPARO
+Q: Entra en el menú de disparo manual, se muestra el tablero oponente (T_Shoot)
+*/
+int dispararManual(Tablero* T_Receive, Tablero* T_Shoot);
 
 /*P: Tableros y registros máquinas existen
 - T_Receive: TABLERO FLOTA AL QUE SE DISPARA
 - T_Shoot: TABLERO OPONENTE EN EL QUE SE REGISTRA EL DISPARO
 Q: Dispara a una posición aleatoria, si encuentra un barco, registra la posición y en el siguiente turno
 dispará para encontrar la orientación, una vez encontrada, disparará hasta derribarlo.*/
-void dispararAleatorio(Tablero* T_Receive, Tablero* T_Shoot, Registro_Maquina *reg);
+int dispararAleatorio(Tablero* T_Receive, Tablero* T_Shoot, Registro_Maquina *reg);
 
 /*P: Tableros existen, x, y dentro de tablero
 Q: Recorre el barco empezando desde x,y y comprueba si las casillas entre T_Flota y T_Oponente coinciden
 cómo disparadas y que haya un barco, si es así --> true, sino --> false*/
 int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y);
 
+/*P: Tableros existen y x,y dentro de tablero. Hay una casilla de barco en x,y
+Q: Devuelve la orientación (GX) del barco en x, y. Devuelve G315 + 1 (8) si es un barco de una sola casilla*/
+int encontrarOrientacion(Tablero* T_Flota, int x, int y);
 
-
-
+/*P: Tablero existe, x, y dentro de tablero, orient es la orientación del barco (encontrarOrientacion)
+Q: Devuelve por referencia las coordenadas del extremo*/
+void encontrarExtremo(Tablero* T_Flota, int* x, int* y, int orient);
 
 
 //FUNCIONES DE DESARROLLO DE LA PARTIDA
