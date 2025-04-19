@@ -106,8 +106,10 @@ void encontrarExtremo(Tablero* T_Flota, int* x, int* y, int orient);
 //FUNCIONES DE DESARROLLO DE LA PARTIDA
 
 //Pre: Ninguna
-//Post: Función por defecto que reinicia el juego, prepara los tableros, carga los archivos y carga la configuración en la partida.
-void reiniciarPartida();
+//Post: Función por defecto que reinicia (inicia desde 0)el juego, prepara los tableros, 
+//carga los archivos y carga la configuración en la partida Devuelve lo mismo que flujoPartida.
+//Es decir, 1 si se ha completado la partida, 0 sino.
+int reiniciarPartida();
 
 void continuarPartida();
 

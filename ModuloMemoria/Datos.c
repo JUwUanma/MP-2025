@@ -380,6 +380,7 @@ void modificar_config(ConfiguracionJuego *config) {
 
     } while (opcion != 0);
 }
+}
 
 
 void modificar_barcos(ConfiguracionJuego *config){
