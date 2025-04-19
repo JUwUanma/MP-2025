@@ -33,18 +33,6 @@ typedef struct{
     int esAgua;
 }Registro_Maquina;
 
-
-typedef struct{
-
-    int id_turno;                       //Turno actual -> Sólo para f_turno, al cargar partida siempre empieza J1
-    int n_ronda;                        //Número de rondas jugadas
-    int nBarcosRestantes[3];            //Vector estática que almacena los barcos restantes POR DISPARAR de cada jugador [1]: J1, [2]: J2, [0]: N/A        
-    int hayGanador;                     //0 si NO hay ganador, 1 si J1 es ganador, 2 si J2 es ganador, 3 si empate.
-    Jugador jugador1;                   
-    Jugador jugador2;
-
-}ControlPartida;
-
 //Estructura Jugador: almacena la informacion de los jugadores
 typedef struct{
     int Id_jugador;             		//Identificador unico de cada jugador
@@ -56,6 +44,17 @@ typedef struct{
     Tablero Tablero_flota;       	    //Tablero de la flota del jugador
     Tablero Tablero_oponente;    	    //Tablero del oponente
 }Jugador;
+typedef struct{
+
+    int id_turno;                       //Turno actual -> Sólo para f_turno, al cargar partida siempre empieza J1
+    int n_ronda;                        //Número de rondas jugadas
+    int nBarcosRestantes[3];            //Vector estática que almacena los barcos restantes POR DISPARAR de cada jugador [1]: J1, [2]: J2, [0]: N/A        
+    int hayGanador;                     //0 si NO hay ganador, 1 si J1 es ganador, 2 si J2 es ganador, 3 si empate.
+    Jugador jugador1;                   
+    Jugador jugador2;
+
+}ControlPartida;
+
 
 
 
@@ -123,9 +122,9 @@ int flujoPartida(ConfiguracionJuego* config, Registro_Maquina *reg_maquina, Cont
 Q: Realiza un turno normal del jugador j, cambia partida->hayGanador si no quedan barcos restantes por hundir del oponente*/
 void f_turno(Registro_Maquina *reg_maq, ControlPartida *partida);
 
-/*Precondición: Recibe un puntero a estructura de un jugador, el vector de barcos cargado y la elección del jugador
-Postcondición: Ejecuta la acción de colocar barcos en función del modo escogido*/
-void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco);
+/*Precondición: Recibe un puntero a estructura de un jugador y el vector de barcos cargado
+Postcondición: Ejecuta la acción de colocar barcos en función del modo escogido y devuelve el carácter indicador*/
+char f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos);
 
 
 

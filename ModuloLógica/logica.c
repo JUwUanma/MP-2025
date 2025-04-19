@@ -4,7 +4,9 @@
 #include <ctype.h> //Para la función toupper()
 #include <windows.h> //Sleep(tiempo)
 #include "logica.h"
-
+#include "..\\ModuloMemoria\Datos.h"
+#include "..\\ModuloTablero\Tablero.h"
+#include "..\\ModuloInterfaz\Interfaz.h"
 /*P: Tablero existe, y orient es la orientación del barco, x, y dentro de tablero
 Q: Devuelve true si la casilla se encuentra en un extremo del barco, es decir,
 en la orientación dada, hay una casilla en un sentido y no en el contrario.*/
@@ -337,8 +339,8 @@ cargar_jugador(&j2, ConfiguracionJuego_L, 2);
 char eleccion_barco_j1, eleccion_barco_j2;
 //Elección de colocar barcos
 
-f_eleccion_barcos(&j1,Vector_Barcos_L, eleccion_barco_j1); //Guarda la colocación de los barcos en los tableros de cada jugador
-f_eleccion_barcos(&j2,Vector_Barcos_L, eleccion_barco_j2);
+eleccion_barco_j1=f_eleccion_barcos(&j1,Vector_Barcos_L); //Guarda la colocación de los barcos en los tableros de cada jugador
+eleccion_barco_j2=f_eleccion_barcos(&j2,Vector_Barcos_L);
     
 return flujoPartida(&ConfiguracionJuego_L, &reg_maquina, &ControlPartida_L);
 }
@@ -509,7 +511,7 @@ void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
         // Datos de los jugadores
         printf("| Jugador1  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador1.Num_disparos,nVacias[0],nAgua[0],nTocado[0],nHundido[0],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador1.barcos_restantes,ControlP.jugador1.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
-        printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador2.nBarcos,ControlP.jugador2.Ganador);
+        printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador2.barcos_restantes,ControlP.jugador2.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n\n");
     
         Sleep(8);//Cambiar por "pulse para mostrar lo siguiente"
@@ -540,15 +542,16 @@ void buscarNcasillas(Tablero t, int *valor, char c){
 
 }
 
-void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char *eleccion_barco) {
+char f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos) {
     int flag_valid_b = 0;
     char input;
+    char eleccion_barco;
 
     do {
         printf("%s: Introduce un carácter para elegir modo de colocación de barcos:\n\n[M]: Manual\n[A]: Aleatorio\n\n", pj->Nomb_jugador);
-        scanf(" %c", &input); // Espacio antes de %c para consumir whitespace
+        scanf(" %c", &input); 
         
-        // Convertir a mayúscula para simplificar la comparación
+        //Convertir a mayúscula para simplificar la comparación
         char upper_input = toupper(input);
         
         switch (upper_input) {
@@ -571,7 +574,8 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char *eleccion_bar
     } while (!flag_valid_b);
     
     // Asignar el valor elegido (en mayúscula) al parámetro de salida
-    *eleccion_barco = toupper(input);
+    eleccion_barco = toupper(input);
+    return eleccion_barco;
 }
 
 
