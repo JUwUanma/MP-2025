@@ -3,8 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <windows.h>
 #include "..\\ModuloMemoria\Datos.h"
 #include "..\\ModuloTablero\Tablero.h"
+#include "..\\ModuloInterfaz\Interfaz.h"
 
 
 enum TIPO_DISPARO {AGUA, TOCADO, HUNDIDO};
@@ -111,8 +114,6 @@ void encontrarExtremo(Tablero* T_Flota, int* x, int* y, int orient);
 //Es decir, 1 si se ha completado la partida, 0 sino.
 int reiniciarPartida();
 
-void continuarPartida();
-
 
 /*P: Todos los registros cargados e inicializados
 Q: Realiza el flujo normal de partida. Devuelve 1 si se ha terminado, 0 si no. Los datos de partida están en partida*/
@@ -130,7 +131,7 @@ void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barc
 
 
 
-void salir_partida(ConfiguracionJuego ConfiguracionJuego, ControlPartida ControlPartida);
+void salir_partida(ConfiguracionJuego* ConfiguracionJuego, ControlPartida* ControlPartida);
 
 
 void fin_partida(ConfiguracionJuego config, ControlPartida ControlP);

@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ctype.h> //Para la función toupper()
 #include <windows.h> //Sleep(tiempo)
 #include "logica.h"
-#include "..\\ModuloMemoria\Datos.h"
-#include "..\\ModuloTablero\Tablero.h"
-#include "..\\ModuloInterfaz\Interfaz.h"
 
 /*P: Tablero existe, y orient es la orientación del barco, x, y dentro de tablero
 Q: Devuelve true si la casilla se encuentra en un extremo del barco, es decir,
@@ -257,8 +255,8 @@ int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq
     int x,y;
     int long_barco=0;
 
-    Tablero* T_Receive = J_Receive->Tablero_flota;
-    Tablero* T_Shoot = J_Shoot->Tablero_oponente;
+    Tablero* T_Receive = &J_Receive->Tablero_flota;
+    Tablero* T_Shoot = &J_Shoot->Tablero_oponente;
 
     if(J_Shoot->Tipo_disparo == 'M'){
         resDisparo = disparoManual();
@@ -269,11 +267,9 @@ int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq
     if (resDisparo == TOCADO){//Caso de que haya tocado un barco
 
         system("cls");
-        printf("_ _____                   _       _ \n");
-        printf("(_)_   _|__   ___ __ _  __| | ___ | |\n");
-        printf("| | | |/ _ \\ / __/ _` |/ _` |/ _ \\| |\n");
-        printf("| | | | (_) | (_| (_| | (_| | (_) |_|\n");
-        printf("|_| |_|\\___/ \\___\\__,_|\\__,_|\\___/(_)\n");
+        printf("░▀█▀░█▀█░█▀▀░█▀█░█▀▄░█▀█░█\n");
+        printf("░░█░░█░█░█░░░█▀█░█░█░█░█░▀\n");
+        printf("░░▀░░▀▀▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀\n");
         printf("\n\n¡Has tocado un barco!\n");
 
         Sleep(3);
@@ -295,14 +291,11 @@ int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq
     }else{
 
         system("cls");
-        printf("  _ _    _              __      _ _           _       _ \n");
-        printf(" (_) |  | |            / _|    | | |         | |     | |\n");
-        printf(" | | |__| | __ _ ___  | |_ __ _| | | __ _  __| | ___ | |\n");
-        printf(" | |  __  |/ _` / __| |  _/ _` | | |/ _` |/ _` |/ _ \\| |\n");
-        printf(" | | |  | | (_| \\__ \\ | || (_| | | | (_| | (_| | (_) |_|\n");
-        printf(" |_|_|  |_|\\__,_|___/ |_| \\__,_|_|_|\\__,_|\\__,_|\\___/(_)\n");
+        printf("░█░█░█▀█░█▀▀░░░█▀▀░█▀█░█░░░█░░░█▀█░█▀▄░█▀█░█\n");
+        printf("░█▀█░█▀█░▀▀█░░░█▀▀░█▀█░█░░░█░░░█▀█░█░█░█░█░▀\n");
+        printf("░▀░▀░▀░▀░▀▀▀░░░▀░░░▀░▀░▀▀▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀\n");
         printf("\n\nHas tocado agua.\n");
-        Sleep(3);
+        Sleep(5);
         system("cls");
         mostrarOponente(J_Shoot);
 
@@ -384,9 +377,53 @@ int flujoPartida(ConfiguracionJuego* config, Registro_Maquina *reg_maquina, Cont
             system("cls");
             printf("-----PARTIDA TERMINADA-----\n\n");
             if(partida->hayGanador == EMPATE){
-                printf("Ha sido un empate! Bien jugado!");
+                printf("███████╗███╗   ███╗██████╗  █████╗ ████████╗███████╗██╗\n");
+                printf("██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██║\n");
+                printf("█████╗  ██╔████╔██║██████╔╝███████║   ██║   █████╗  ██║\n");
+                printf("██╔══╝  ██║╚██╔╝██║██╔═══╝ ██╔══██║   ██║   ██╔══╝  ╚═╝\n");
+                printf("███████╗██║ ╚═╝ ██║██║     ██║  ██║   ██║   ███████╗██╗\n");
+                printf("╚══════╝╚═╝     ╚═╝╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝\n");
+
+
+
             }else{
+
                 printf("Ha ganado el jugador %d! Enhorabuena! WP\n\n", partida->hayGanador);
+
+                printf("░█▀▀░█▀█░█░█░█▀█░█▀▄░█▀█░█▀▄░█░█░█▀▀░█▀█░█▀█░░░▀▀█░█░█░█▀▀░█▀█░█▀▄░█▀█░█▀▄░░░░\n");
+                printf("░█▀▀░█░█░█▀█░█░█░█▀▄░█▀█░█▀▄░█░█░█▀▀░█░█░█▀█░░░░░█░█░█░█░█░█▀█░█░█░█░█░█▀▄░░░░\n");
+                printf("░▀▀▀░▀░▀░▀░▀░▀▀▀░▀░▀░▀░▀░▀▀░░▀▀▀░▀▀▀░▀░▀░▀░▀░░░▀▀░░▀▀▀░▀▀▀░▀░▀░▀▀░░▀▀▀░▀░▀░░░░\n");
+                if(partida->hayGanador==GANA_J1){
+
+                    printf("    ▄▄▄▄     \n");
+                    printf("  ▄█░░░░▌    \n");
+                    printf(" ▐░░▌▐░░▌    \n");
+                    printf("  ▀▀ ▐░░▌    \n");
+                    printf("     ▐░░▌    \n");
+                    printf("     ▐░░▌    \n");
+                    printf(" ▄▄▄▄█░░█▄▄▄ \n");
+                    printf("▐░░░░░░░░░░░▌\n");
+                    printf(" ▀▀▀▀▀▀▀▀▀▀▀ \n");
+
+
+                }else{
+
+
+                    printf(" ▄▄▄▄▄▄▄▄▄▄▄ \n");
+                    printf("▐░░░░░░░░░░░▌\n");
+                    printf(" ▀▀▀▀▀▀▀▀▀█░▌\n");
+                    printf("          ▐░▌\n");
+                    printf("          ▐░▌\n");
+                    printf(" ▄▄▄▄▄▄▄▄▄█░▌\n");
+                    printf("▐░░░░░░░░░░░▌\n");
+                    printf("▐░█▀▀▀▀▀▀▀▀▀ \n");
+                    printf("▐░█▄▄▄▄▄▄▄▄▄ \n");
+                    printf("▐░░░░░░░░░░░▌\n");
+                    printf(" ▀▀▀▀▀▀▀▀▀▀▀ \n");
+
+
+                }
+
             }
             flagStopGame = true;
         }
@@ -443,29 +480,11 @@ void salir_partida(ConfiguracionJuego* ConfiguracionJuego, ControlPartida* Contr
     //guardar turno
     guardar_jugadores(&ControlPartida->jugador1, &ControlPartida->jugador2, &ConfiguracionJuego); //Guarda los jugadores en configuración
     guardar_config(*ConfiguracionJuego); //Guarda configuración en fichero
-    MenuPrincipal();
+    //MenuPrincipal();
 
 }
 
-//???
-void fin_partida(ConfiguracionJuego config, ControlPartida ControlP){
 
-    int nVacias[2], nAgua[2], nTocado[2], nHundido[2];
-    //recorre el tablero en busca de *, T y H
-    buscarNcasillas(config.Tablero_oponente1,&nVacias[0],' ');
-    buscarNcasillas(config.Tablero_oponente1,&nAgua[0],'*');
-    buscarNcasillas(config.Tablero_oponente1,&nTocado[0],'T');
-    buscarNcasillas(config.Tablero_oponente1,&nHundido[0],'H');
-
-    buscarNcasillas(config.Tablero_oponente1,&nVacias[1],' ');
-    buscarNcasillas(config.Tablero_oponente2,&nAgua[1],'*');
-    buscarNcasillas(config.Tablero_oponente2,&nTocado[1],'T');
-    buscarNcasillas(config.Tablero_oponente2,&nHundido[1],'H');
-
-
-    MenuJuego();
-
-}
 
 void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
     
@@ -482,7 +501,7 @@ void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
     buscarNcasillas(config.Tablero_oponente2,&nHundido[1],'H');
     
         printf("+----------------------+-----------+------------+------------+------------+------------+------------+------------+------------+\n");
-        printf("|    Valor de las casillas                                                |    Barcos    |\n");
+        printf("|    Valor de las casillas                                                |    Barcos                                         |\n");
         printf("+----------------------+-----------+------------+------------+------------+------------+------------+------------+------------+\n");
         printf("| Jugador   | Disparos | Vacías    | Agua       | Tocadas    | Hundidas   | Hundidos   | Restan     | Ganador    |\n");
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
@@ -521,36 +540,38 @@ void buscarNcasillas(Tablero t, int *valor, char c){
 
 }
 
-void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char eleccion_barco){
+void f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos, char *eleccion_barco) {
+    int flag_valid_b = 0;
+    char input;
 
-    int flag_valid_b=0;
-
-    do{
-
+    do {
         printf("%s: Introduce un carácter para elegir modo de colocación de barcos:\n\n[M]: Manual\n[A]: Aleatorio\n\n", pj->Nomb_jugador);
-        scanf("%c", eleccion_barco);
+        scanf(" %c", &input); // Espacio antes de %c para consumir whitespace
         
+        // Convertir a mayúscula para simplificar la comparación
+        char upper_input = toupper(input);
         
-            switch (eleccion_barco)
-            {
+        switch (upper_input) {
             case 'M':
-                colocarManual(&pj, vectBarcos);
+                colocarManual(pj, vectBarcos);
                 flag_valid_b = true;
                 break;
-
-
+                
             case 'A':
-                colocarAleatorio(&pj);
+                colocarAleatorio(pj);
                 flag_valid_b = true;
                 break;
-
+                
             default:
-                printf("No se reconoce el carácter\n");
+                printf("No se reconoce el carácter '%c'. Por favor introduce 'M' o 'A'.\n", input);
+                while (getchar() != '\n');
                 flag_valid_b = false;
                 break;
-            }
-        }while(!flag_valid_b);
+        }
+    } while (!flag_valid_b);
     
+    // Asignar el valor elegido (en mayúscula) al parámetro de salida
+    *eleccion_barco = toupper(input);
 }
 
 
@@ -603,13 +624,4 @@ ControlPartida cargar_controlPartida(ConfiguracionJuego config){
     ControlPartida.nBarcosRestantes[1] , ControlPartida.nBarcosRestantes[2] = config.Num_barcos; //!!!
 
     return ControlPartida;
-}
-
-void guardar_controlPartida(ControlPartida ControlPartida){
-
-
-    //guardar id del turno que corresponde (fichero?)
-
-
-
 }

@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../ModuloMemoria/Datos.h"
+#include "..\\ModuloMemoria\Datos.h"
+#include "..\\ModuloLógica\logica.h"
 
 #define MAX_RANDOM_TRIES 300
 
