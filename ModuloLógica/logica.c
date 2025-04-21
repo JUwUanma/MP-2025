@@ -106,8 +106,8 @@ int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y)
     int flagHundido = false;
     char charBufferFlota;
     char charBufferOpon;
-
-    int orient = encontrarOrientación(&T_Flota, x, y);
+//Busca la orientación del barco
+    int orient = encontrarOrientación(&T_Flota, x, y); 
     if(orient == G315+1) return true;
 
     encontrarExtremo(&T_Flota, &x, &y, orient);
@@ -260,7 +260,7 @@ int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq
     Tablero* T_Receive = &J_Receive->Tablero_flota;
     Tablero* T_Shoot = &J_Shoot->Tablero_oponente;
 
-    if(J_Shoot->Tipo_disparo == 'M'){
+    if(J_Shoot->Tipo_disparo == 'M'){//Tipo de disparo del jugador
         resDisparo = disparoManual();
     }else{
         resDisparo = dispararAleatorio(&T_Receive, &T_Shoot, &reg_maq);
@@ -290,7 +290,7 @@ int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq
         system("cls");
         mostrarOponente(J_Shoot);
 
-    }else{
+    }else{//Caso que fallas ):
 
         system("cls");
         printf("░█░█░█▀█░█▀▀░░░█▀▀░█▀█░█░░░█░░░█▀█░█▀▄░█▀█░█\n");
@@ -442,7 +442,7 @@ void f_turno(Registro_Maquina *reg_maq, ControlPartida *partida)
     Jugador *J_Turno; //Puntero al jugador que tiene el turno
     Jugador *J_Oponente; //Puntero al jugador oponente al del turno
 
-    if(partida->id_turno == 1){
+    if(partida->id_turno == 1){//¿De quién es el turno?
         *J_Turno = partida->jugador1;
         *J_Oponente = partida->jugador2;
     }else{
@@ -489,9 +489,9 @@ void salir_partida(ConfiguracionJuego* ConfiguracionJuego, ControlPartida* Contr
 
 
 void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
-    
+    char enter;
     int nVacias[2], nAgua[2], nTocado[2], nHundido[2];
-    //recorre el tablero en busca de *, T y H
+    //recorre el tablero en busca de *, T y H y las guarda en los vectores
     buscarNcasillas(config.Tablero_oponente1,&nVacias[0],' ');
     buscarNcasillas(config.Tablero_oponente1,&nAgua[0],'*');
     buscarNcasillas(config.Tablero_oponente1,&nTocado[0],'T');
@@ -513,23 +513,28 @@ void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP){
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n");
         printf("| Jugador2  |   %d     |   %d      |   %d       |   %d       |   %d       |   %d       |   %d       |   %d       |\n",ControlP.jugador2.Num_disparos,nVacias[1],nAgua[1],nTocado[1],nHundido[1],config.Tama_flota-ControlP.jugador2.barcos_restantes,ControlP.jugador2.barcos_restantes,ControlP.jugador2.Ganador);
         printf("+-----------+----------+-----------+------------+------------+------------+------------+------------+------------+\n\n");
-    
-        Sleep(8);//Cambiar por "pulse para mostrar lo siguiente"
 
+        printf("Pulse cualquier Enter para mostrar el siguiente apartado.\n");
+        scanf("%c",enter);
+        getchar();//Limpiar buffer
+
+        limpiarPantalla();
         printf("Jugador 1: \n");
         mostrarFlota(&ControlP.jugador1);
         mostrarOponente(&ControlP.jugador1);
 
-        Sleep(8);
-
+        limpiarPantalla();
+        printf("Pulse cualquier Enter para mostrar el siguiente apartado.\n");
+        scanf("%c",enter);
+        getchar();
 
         printf("Jugador 2: \n");
         mostrarFlota(&ControlP.jugador2);
         mostrarOponente(&ControlP.jugador2);
 
-
     }
 
+    //Busca el carácter dado en un tablero y lo guarda en el puntero al valor
 void buscarNcasillas(Tablero t, int *valor, char c){
 
     valor=0;
@@ -555,12 +560,12 @@ char f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos) {
         char upper_input = toupper(input);
         
         switch (upper_input) {
-            case 'M':
+            case 'M'://Caso de colocación de barcos manual
                 colocarManual(pj, vectBarcos);
                 flag_valid_b = true;
                 break;
                 
-            case 'A':
+            case 'A'://Caso de colocación de barcos automática
                 colocarAleatorio(pj);
                 flag_valid_b = true;
                 break;
@@ -608,7 +613,7 @@ void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id){
 }
 
 void guardar_jugadores(Jugador* j1, Jugador* j2, ConfiguracionJuego *config){
-
+//Guarda contenidos en configuración de las estructuras de jugadores
     config->Tablero_flota1 = j1->Tablero_flota;
     config->Tablero_flota2 = j2->Tablero_flota;
 
@@ -618,7 +623,7 @@ void guardar_jugadores(Jugador* j1, Jugador* j2, ConfiguracionJuego *config){
 }
 
 ControlPartida cargar_controlPartida(ConfiguracionJuego config){
-
+//Devuelve una estructura cargada con los datos inicializados para el control de la partida
     ControlPartida ControlPartida;
     ControlPartida.jugador1.Ganador = 0;
     ControlPartida.jugador2.Ganador = 0;

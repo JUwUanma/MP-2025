@@ -13,24 +13,13 @@
 enum TIPO_DISPARO {AGUA, TOCADO, HUNDIDO};
 enum ESTADOS_PARTIDA {NO_FINALIZADA, GANA_J1, GANA_J2, EMPATE};
 
-//Funciones:
+//--------------------------------ESTRUCTURAS--------------------------------
 
-
-
-//FUNCIONES DE LOS DISPAROS [POSIBLE MÓDULO APARTE SI SE NECESITAN FUTURAS FUNCIONES]
-
-//Precondición: Recibe una estructura como puntero (Ya sea de J1 o J2)
-//Postcondición:En función del tipo de disparo del jugador, se modifica la estructura
-//              si el disparo es tipo automático, se ejecuta un algoritmo que realice el disparo
-//              de lo contrario, el usuario introduce las coordenadas.
-//NOTA: Esta función puede cambiar, es decir, puede ser modificada de manera que haga los cambios y muestre
-//      los resultados en pantalla, eliminando la siguiente función a esta y añadiendo sus argumentos. 
-
+//Estructura Registro_Máquina: registro que usa el programa como apoyo principalmente para disparar automático
 typedef struct{
-    int x_maq, y_maq; 
-    int orient_maq;
-    int flagEncontrado_maq;
-    int esAgua;
+    int x_maq, y_maq;           //Coordenadas x,y que recibe el algoritmo por si necesita guardarlas
+    int orient_maq;             //Orientación de un barco
+    int flagEncontrado_maq;     //Boolenao que indica si se ha encontrado un barco
 }Registro_Maquina;
 
 //Estructura Jugador: almacena la informacion de los jugadores
@@ -44,18 +33,21 @@ typedef struct{
     Tablero Tablero_flota;       	    //Tablero de la flota del jugador
     Tablero Tablero_oponente;    	    //Tablero del oponente
 }Jugador;
+
+//Estructura ControlPartida: almacena los valores fundamentales durante el desarrollo de una partida
 typedef struct{
 
     int id_turno;                       //Turno actual -> Sólo para f_turno, al cargar partida siempre empieza J1
     int n_ronda;                        //Número de rondas jugadas
     int nBarcosRestantes[3];            //Vector estática que almacena los barcos restantes POR DISPARAR de cada jugador [1]: J1, [2]: J2, [0]: N/A        
     int hayGanador;                     //0 si NO hay ganador, 1 si J1 es ganador, 2 si J2 es ganador, 3 si empate.
-    Jugador jugador1;                   
+    Jugador jugador1;                   //Estructuras de los jugadores
     Jugador jugador2;
 
 }ControlPartida;
 
 
+//--------------------------------FUNCIONES--------------------------------
 
 
 //FUNCIONES RELACIONADAS CON EL DISPARO
@@ -105,12 +97,17 @@ Q: Devuelve por referencia las coordenadas del extremo*/
 void encontrarExtremo(Tablero* T_Flota, int* x, int* y, int orient);
 
 
+
+
+
+
+
 //FUNCIONES DE DESARROLLO DE LA PARTIDA
 
-//Pre: Ninguna
-//Post: Función por defecto que reinicia (inicia desde 0)el juego, prepara los tableros, 
-//carga los archivos y carga la configuración en la partida Devuelve lo mismo que flujoPartida.
-//Es decir, 1 si se ha completado la partida, 0 sino.
+/*Pre: Ninguna
+Post: Función por defecto que reinicia (inicia desde 0) el juego, prepara los tableros, 
+carga los archivos y carga la configuración en la partida Devuelve lo mismo que flujoPartida.
+Es decir, 1 si se ha completado la partida, 0 sino.*/
 int reiniciarPartida();
 
 
@@ -126,16 +123,17 @@ void f_turno(Registro_Maquina *reg_maq, ControlPartida *partida);
 Postcondición: Ejecuta la acción de colocar barcos en función del modo escogido y devuelve el carácter indicador*/
 char f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos);
 
-
-
-
-
+/*
+Precondición: Recibe las estructuras principales del programa para realizar todos los guardados
+Postcondición: Concluye el flujo de la partida en caso de querer salir o haber terminado la partida
+*/
 void salir_partida(ConfiguracionJuego* ConfiguracionJuego, ControlPartida* ControlPartida);
 
-
-void fin_partida(ConfiguracionJuego config, ControlPartida ControlP);
-
-
+/*
+Precondición: Recibe un tablero, un puntero a entero y un carácter a buscar dentro del tablero
+Postcondición: Cambia el valor en la dirección apuntada con el número de casillas en el tablero en el que se encuentre el carácter
+Nota: Función usada para mostrar el resumen de la partida
+*/
 void buscarNcasillas(Tablero t, int *valor, char c);
 
 
@@ -151,7 +149,9 @@ Postcondición: Devuelve una estructura cargada con los datos del jugador especi
 
 void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id);
 
-
-ControlPartida cargar_controlPartida();
+/*Precondición: Recibe una estructura de configuración previamente inicializada
+Postcondición: Devuelve una estructura cargada con los datos inicializados para el control de la partida
+*/
+ControlPartida cargar_controlPartida(ConfiguracionJuego config);
 
 #endif //LOGICA_H
