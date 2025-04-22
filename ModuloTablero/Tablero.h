@@ -1,11 +1,13 @@
 #ifndef _TABLERO_H_
 #define _TABLERO_H_
-
+#include "Datos.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "..\\ModuloMemoria\Datos.h"
-#include "..\\ModuloLógica\logica.h"
+#include "Interfaz.h"
+#include "logica.h"
+
+
 
 #define MAX_RANDOM_TRIES 300
 
@@ -24,7 +26,7 @@ enum direccion {IZQUIERDA, DERECHA};
 /*P: n > 0
 Q: Salta n número de líneas
 */
-inline void jump(int n);
+void jump(int n);
 
 //Devuelve 1 si se ha respondido Y o y
 //Devuelve 0 si se ha respondido N o n
@@ -34,6 +36,12 @@ int respuesta(char c);
 /*P: filas > 0, columnas > 0;
 Q: Crea un tablero vacío (' ') de un nº indicado de filas y columnas*/
 Tablero* crearTablero(int maxLado);
+
+/*P:Estructura de tablero a reiniciar
+Q:Devuelve el tablero reiniciado a ' '
+*/
+void reiniciarTablero(Tablero* T);
+
 
 /*P: N/A
 Q: Muestra por pantalla la flota del Jugador indicado*/
@@ -49,14 +57,14 @@ void colocarManual(Jugador* j, Vector_Barcos vect);
 
 /*P: N/A
 Q: Genera un mapa de barcos aleatorio en el Tablero flota*/
-void colocarAleatorio(Jugador* j);
+void colocarAleatorio(Jugador* j, Vector_Barcos* vect);
 
 /*UTILIZAR SOLO PARA OPERACIONES FUERA DEL JUEGO -> registrarDisparo()
 P: Existe el tablero T. 0 <= x,y < maxLado
 Q: Coloca en la casilla [x,y] del jugador j del tablero indicado el caracter introducido. 
 Devuelve 1 si se ha colocado correctamente, 0 sino.
 ENUM: FLOTA(0) OPONENTE(1)*/
-int colocarCasilla(char c, Tablero* T, int x, int y);
+void colocarCasilla(char c, Tablero* T, int x, int y);
 
 /*P: Tablero creado, caracter válido, nCasillas, x, y dentro de tablero
 Q: Rellena nCasillas del tablero T con el caracter c desde la casilla x, y con orientacion orient*/
@@ -80,12 +88,12 @@ int verificarCasilla(Tablero* T, int x, int y);
 /*P: Tablero T creado, Barco B existente, orientación válida -> enum: orientacion [0, 7], x,y pertenece a tablero
 Q: Devuelve 1 si el barco B cabe en el tablero T con la orientación indicada desde x,y.
 */
-int verificarEspacio(Tablero * T, Barco B, int orientacion, int x, int y);
+int verificarEspacio(Tablero * T, Barco *B, int orientacion, int x, int y);
 
 /*P: Tablero T creado
 Q: Devuelve por referencia las primeras coordenadas libres A PARTIR de las coordenadas x,y iniciales.
 Si no hubiera devuelve [-1,-1]*/
-void devolverCoordenadasLibres(Tablero* T, int x, int y);
+void devolverCoordenadasLibres(Tablero* T, int* x, int* y);
 
 /*P: Tablero T creado, [x,y] dentro del tablero (No hace falta que sus alrededores también)
 Q: En el tablero T, coloca alrededor de la posición [x,y] el caracter "charToPlace" y machaca

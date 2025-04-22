@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "datos.h": "c",
+        "logica.h": "c",
+        "tablero.h": "c",
+        "conio.h": "c"
+    }
+}

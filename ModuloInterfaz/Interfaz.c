@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <conio.h>
 #include "Interfaz.h"
+#include "Datos.h"
+#include "logica.h"
 
 void limpiarPantalla() {
     system("cls");
@@ -37,28 +39,28 @@ int navegarMenu(const char *opciones[], int numOpciones) {
     }
 }
 
-void MenuPrincipal() {
+void MenuPrincipal(ConfiguracionJuego config, ControlPartida ControlP, Registro_Maquina reg_maq) {
         // Mensaje de bienvenida (se muestra solo al iniciar el juego)
 
-    printf("+==============================================================+\n");
-    printf("|   ____ ___ _____ _   ___     _______ _   _ ___ ____   ___    |\n");
-    printf("|  | __ )_ _| ____| \ | \ \   / / ____| \ | |_ _|  _ \ / _ \   |\n");
-    printf("|  |  _ \| ||  _| |  \| |\ \ / /|  _| |  \| || || | | | | | |  |\n");
-    printf("|  | |_) | || |___| |\  | \ V / | |___| |\  || || |_| | |_| |  |\n");
-    printf("|  |____/___|_____|_| \_|  \_/  |_____|_| \_|___|____/ \___/   |\n");
-    printf("|                           / \                                |\n");
-    printf("|                          / _ \                               |\n");
-    printf("|                         / ___ \                              |\n");
-    printf("|       _   _ _   _ _   _/_/__ \_\ ____    _        _          |\n");
-    printf("|      | | | | | | | \ | |  _ \_ _|  _ \  | |      / \         |\n");
-    printf("|      | |_| | | | |  \| | | | | || |_) | | |     / _ \        |\n");
-    printf("|      |  _  | |_| | |\  | |_| | ||  _ <  | |___ / ___ \       |\n");
-    printf("|      |_| |_|\___/|_|_\_|____/___|_| \_\ |_____/_/   \_\      |\n");
-    printf("|              |  ___| |   / _ \_   _|/ \                      |\n");
-    printf("|              | |_  | |  | | | || | / _ \                     |\n");
-    printf("|              |  _| | |__| |_| || |/ ___ \                    |\n");
-    printf("|              |_|   |_____\___/ |_/_/   \_\                   |\n");
-    printf("+==============================================================+\n");
+    // printf("+==============================================================+\n");
+    // printf("|   ____ ___ _____ _   ___     _______ _   _ ___ ____   ___    |\n");
+    // printf("|  | __ )_ _| ____| \ | \ \   / / ____| \ | |_ _|  _ \ / _ \   |\n");
+    // printf("|  |  _ \| ||  _| |  \| |\ \ / /|  _| |  \| || || | | | | | |  |\n");
+    // printf("|  | |_) | || |___| |\  | \ V / | |___| |\  || || |_| | |_| |  |\n");
+    // printf("|  |____/___|_____|_| \_|  \_/  |_____|_| \_|___|____/ \___/   |\n");
+    // printf("|                           / \                                |\n");
+    // printf("|                          / _ \                               |\n");
+    // printf("|                         / ___ \                              |\n");
+    // printf("|       _   _ _   _ _   _/_/__ \_\ ____    _        _          |\n");
+    // printf("|      | | | | | | | \ | |  _ \_ _|  _ \  | |      / \         |\n");
+    // printf("|      | |_| | | | |  \| | | | | || |_) | | |     / _ \        |\n");
+    // printf("|      |  _  | |_| | |\  | |_| | ||  _ <  | |___ / ___ \       |\n");
+    // printf("|      |_| |_|\___/|_|_\_|____/___|_| \_\ |_____/_/   \_\      |\n");
+    // printf("|              |  ___| |   / _ \_   _|/ \                      |\n");
+    // printf("|              | |_  | |  | | | || | / _ \                     |\n");
+    // printf("|              |  _| | |__| |_| || |/ ___ \                    |\n");
+    // printf("|              |_|   |_____\___/ |_/_/   \_\                   |\n");
+    // printf("+==============================================================+\n");
 
 
     const char *opciones[] = {"Configuracion", "Jugar", "Salir"}; //vector de punteros a cadena de caracteres
@@ -69,10 +71,10 @@ void MenuPrincipal() {
 
         switch (seleccion) {
             case 0:
-                MenuConfiguracion();
+                MenuConfiguracion(config);
                 break;
             case 1:
-                MenuJuego();
+                MenuJuego(config,ControlP,reg_maq);
                 break;
             case 2:
                 limpiarPantalla();
@@ -82,7 +84,7 @@ void MenuPrincipal() {
     }
 }
 
-void MenuConfiguracion() {
+void MenuConfiguracion(ConfiguracionJuego config) {
     const char *opciones[] = {"Introducir datos", "Mostrar", "Borrar", "Guardar", "Cargar", "Volver"};
     int seleccion;
 
@@ -91,19 +93,19 @@ void MenuConfiguracion() {
 
         switch (seleccion) {
             case 0:
-                printf("Funcion introducir datos.\n");
+                modificar_config(&config);
                 break;
             case 1:
-                printf("Mostrando configuracion.\n");
+                mostrar_configuracion(config);
                 break;
             case 2:
-                printf("Borrando configuracion...\n");
+                borrar_config(&config);
                 break;
             case 3:
-                printf("Guardando configuracion...\n");
+                guardar_config(config);
                 break;
             case 4:
-                printf("Cargando configuracion...\n");
+                config=cargar_config();
                 break;
             case 5:
                 return;
@@ -112,7 +114,7 @@ void MenuConfiguracion() {
     }
 }
 
-void MenuJuego() {
+void MenuJuego(ConfiguracionJuego config, ControlPartida ControlP, Registro_Maquina reg_maq) {
     const char *opciones[] = {"Jugar partida", "Reiniciar partida", "Resumen", "Volver"};
     int seleccion;
 
@@ -121,13 +123,13 @@ void MenuJuego() {
 
         switch (seleccion) {
             case 0:
-                printf("Funcion Jugar partida.\n");
+                flujoPartida(&config, &reg_maq, &ControlP);
                 break;
             case 1:
-                printf("Funcion Reiniciar partida.\n");
+                reiniciarPartida(config,ControlP,reg_maq);
                 break;
             case 2:
-                printf("Funcion Mostrar resumen.\n");
+                resumen_partida(config, ControlP);
                 break;
             case 3:
                 return;

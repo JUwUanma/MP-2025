@@ -4,9 +4,9 @@
 #include <ctype.h> //Para la función toupper()
 #include <windows.h> //Sleep(tiempo)
 #include "logica.h"
-#include "..\\ModuloMemoria\Datos.h"
-#include "..\\ModuloTablero\Tablero.h"
-#include "..\\ModuloInterfaz\Interfaz.h"
+#include "Interfaz.h"
+#include "Datos.h"
+#include "Tablero.h"
 /*P: Tablero existe, y orient es la orientación del barco, x, y dentro de tablero
 Q: Devuelve true si la casilla se encuentra en un extremo del barco, es decir,
 en la orientación dada, hay una casilla en un sentido y no en el contrario.*/
@@ -17,18 +17,18 @@ static int isExtremo(Tablero* T_Flota, int x, int y, int orient)
     int xIni = x, yIni = y;
     char charBuffer1, charBuffer2;
 
-    moverAOrientacion(&T_Flota, orient, &x, &y);
+    moverAOrientacion(T_Flota, orient, &x, &y);
 
     if(x == xIni || y == yIni) return true; //Si no se ha modificado la posición, es que está en un extremo
 
-    charBuffer2 = devolverCasilla(&T_Flota, x, y);
+    charBuffer2 = devolverCasilla(T_Flota, x, y);
 
     rotar(&orient, G180, IZQUIERDA);
-    moverAOrientacion(&T_Flota, orient, &xIni, &yIni);
+    moverAOrientacion(T_Flota, orient, &xIni, &yIni);
 
     if(x == xIni || y == yIni) return true; //Si no se ha modificado la posición, es que está en un extremo
 
-    charBuffer2 = devolverCasilla(&T_Flota, xIni, yIni);
+    charBuffer2 = devolverCasilla(T_Flota, xIni, yIni);
 
     /*
     NAND
@@ -40,41 +40,7 @@ static int isExtremo(Tablero* T_Flota, int x, int y, int orient)
     return !((charBuffer1 == 'X') && (charBuffer2 == 'X'));
 }
 
-int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y)
-{
-    char charBuffer = devolverCasilla(T_Receive, x, y); //Buffer para no llamar a la función dos veces
-    int resBarco;
-
-    if(charBuffer == ' ' || charBuffer == '0'){ //Si está vacía (o casilla ocupada) devuelve AGUA
-        resBarco = AGUA;
-
-    }else{//Sino, recorre el barco, si se ha recorrido por completo -> HUNDIDO, sino -> TOCADO
-        colocarCasilla('T', T_Shoot, x, y);
-        resBarco = recorrerBarco(T_Receive, T_Shoot, x, y) ? HUNDIDO : TOCADO;
-
-        //Si lo ha hundido, hay que marcarlo como tal en T_Shoot
-        if(resBarco == HUNDIDO){
-            int xBarco, yBarco, orientBarco;
-            orientBarco = encontrarOrientacion(&T_Receive, xBarco, yBarco); //Encuentra la orientación del barco
-            encontrarExtremo(&T_Receive, &xBarco, &yBarco, orientBarco); //Encuentra el extremo
-            
-            rotar(&orientBarco, G180, DERECHA);
-
-            //Hasta que encuentre el otro extremo del barco, coloca casillas y sus adyacentes
-            do{
-                colocarCasilla('H', &T_Shoot, x, y);
-                colocarAdyacentes(&T_Shoot, x, y, 'H', '*');
-                moverAOrientacion(&T_Shoot, orientBarco, &x, &y);
-                
-            }while(!isExtremo(&T_Receive, x, y, orientBarco));
-        }
-    }
-
-    return resBarco;
-}
-
-int encontrarOrientación(Tablero* T_Flota, int x, int y)
-{
+int encontrarOrientación(Tablero* T_Flota, int x, int y){
     int orient = G0;
     int xIni = x, yIni = y;
     int cont = 0; //Contador para saber si es un barco de única casilla
@@ -93,11 +59,46 @@ int encontrarOrientación(Tablero* T_Flota, int x, int y)
     else return orient;
 }
 
+int disparo(Tablero* T_Receive, Tablero* T_Shoot, int x, int y)
+{
+    char charBuffer = devolverCasilla(T_Receive, x, y); //Buffer para no llamar a la función dos veces
+    int resBarco;
+
+    if(charBuffer == ' ' || charBuffer == '0'){ //Si está vacía (o casilla ocupada) devuelve AGUA
+        resBarco = AGUA;
+
+    }else{//Sino, recorre el barco, si se ha recorrido por completo -> HUNDIDO, sino -> TOCADO
+        colocarCasilla('T', T_Shoot, x, y);
+        resBarco = recorrerBarco(T_Receive, T_Shoot, x, y) ? HUNDIDO : TOCADO;
+
+        //Si lo ha hundido, hay que marcarlo como tal en T_Shoot
+        if(resBarco == HUNDIDO){
+            int xBarco, yBarco, orientBarco;
+            orientBarco = encontrarOrientación(T_Receive, xBarco, yBarco); //Encuentra la orientación del barco
+            encontrarExtremo(T_Receive, &xBarco, &yBarco, orientBarco); //Encuentra el extremo
+            
+            rotar(&orientBarco, G180, DERECHA);
+
+            //Hasta que encuentre el otro extremo del barco, coloca casillas y sus adyacentes
+            do{
+                colocarCasilla('H', T_Shoot, x, y);
+                colocarAdyacentes(T_Shoot, x, y, 'H', '*');
+                moverAOrientacion(T_Shoot, orientBarco, &x, &y);
+                
+            }while(!isExtremo(T_Receive, x, y, orientBarco));
+        }
+    }
+
+    return resBarco;
+}
+
+
+
 void encontrarExtremo(Tablero* T_Flota, int* x, int* y, int orient)
 {
      //¿[x,y] está en un extremo del barco?
-     while(!isExtremo(T_Flota, x, y, orient)){
-        moverAOrientacion(T_Flota, orient, &x, &y);
+     while(!isExtremo(T_Flota, *x, *y, orient)){
+        moverAOrientacion(T_Flota, orient, x, y);
     }
 }
 
@@ -107,10 +108,10 @@ int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y)
     char charBufferFlota;
     char charBufferOpon;
 //Busca la orientación del barco
-    int orient = encontrarOrientación(&T_Flota, x, y); 
+    int orient = encontrarOrientación(T_Flota, x, y); 
     if(orient == G315+1) return true;
 
-    encontrarExtremo(&T_Flota, &x, &y, orient);
+    encontrarExtremo(T_Flota, &x, &y, orient);
     rotar(&orient, 180, IZQUIERDA);
 
     do{
@@ -237,7 +238,7 @@ int dispararManual(Tablero *T_Receive, Tablero* T_Shoot){
             if(x > 0 && x < maxLado && y > 0 && y < maxLado){
 
             //Verificar que la casilla no haya sido disparada antes
-                if(verificarCasilla(&T_Shoot, x, y)) 
+                if(verificarCasilla(T_Shoot, x, y)) 
                     flagValidPosition = true;
                 else
                     printf("Ya has disparado a esta posición (%d,%d). Intenta otra.\n", x, y);
@@ -247,7 +248,7 @@ int dispararManual(Tablero *T_Receive, Tablero* T_Shoot){
             }
     }while(flagValidPosition!=1);
 
-    return disparo(&T_Receive, &T_Shoot, x, y);
+    return disparo(T_Receive, T_Shoot, x, y);
 
 }
 
@@ -261,9 +262,9 @@ int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq
     Tablero* T_Shoot = &J_Shoot->Tablero_oponente;
 
     if(J_Shoot->Tipo_disparo == 'M'){//Tipo de disparo del jugador
-        resDisparo = disparoManual();
+        resDisparo = dispararManual(T_Receive, T_Shoot);
     }else{
-        resDisparo = dispararAleatorio(&T_Receive, &T_Shoot, &reg_maq);
+        resDisparo = dispararAleatorio(T_Receive, T_Shoot, reg_maq);
     }
 
     if (resDisparo == TOCADO){//Caso de que haya tocado un barco
@@ -307,13 +308,13 @@ int disparo_menu(Jugador* J_Shoot, Jugador* J_Receive, Registro_Maquina *reg_maq
     return resDisparo; //PROVISIONAL
 }
 
-int reiniciarPartida(){
+int reiniciarPartida(ConfiguracionJuego ConfiguracionJuego_L, ControlPartida ControlPartida_L, Registro_Maquina reg_maquina){
 
-ConfiguracionJuego ConfiguracionJuego_L = cargar_config();
+ConfiguracionJuego_L = cargar_config();
 Vector_Barcos Vector_Barcos_L = cargar_barcos();
 
 //Estructura dedicada a guardar datos sobre coordenadas que necesita el algoritmo para que funcione y evitar perder información vital.
-Registro_Maquina reg_maquina;
+//Registro_Maquina reg_maquina;
 
 //Inicialización de las variables
 reg_maquina.flagEncontrado_maq=false;
@@ -321,8 +322,8 @@ reg_maquina.orient_maq=-1;
 reg_maquina.x_maq=0;
 reg_maquina.y_maq=0;
 
-ControlPartida ControlPartida_L;
-ControlPartida_L = cargar_controlPartida(ConfiguracionJuego_L);
+// ControlPartida ControlPartida_L;
+// ControlPartida_L = cargar_controlPartida(ConfiguracionJuego_L);
 
 //Estructuras de los jugadores
 Jugador *j1= &ControlPartida_L.jugador1;
@@ -333,14 +334,15 @@ int orient_maq=-1;
 int flagEncontrado_maq=false;
 
 //Cargamos los datos guardados en la configuración en la estructura de los jugadores
-cargar_jugador(&j1, ConfiguracionJuego_L, 1);
-cargar_jugador(&j2, ConfiguracionJuego_L, 2);
+cargar_jugador(j1, ConfiguracionJuego_L, 1);
+cargar_jugador(j2, ConfiguracionJuego_L, 2);
 
 char eleccion_barco_j1, eleccion_barco_j2;
 //Elección de colocar barcos
 
-eleccion_barco_j1=f_eleccion_barcos(&j1,Vector_Barcos_L); //Guarda la colocación de los barcos en los tableros de cada jugador
-eleccion_barco_j2=f_eleccion_barcos(&j2,Vector_Barcos_L);
+eleccion_barco_j1=f_eleccion_barcos(j1,Vector_Barcos_L); //Guarda la colocación de los barcos en los tableros de cada jugador
+
+eleccion_barco_j2=f_eleccion_barcos(j2,Vector_Barcos_L);
     
 return flujoPartida(&ConfiguracionJuego_L, &reg_maquina, &ControlPartida_L);
 }
@@ -357,8 +359,8 @@ int flujoPartida(ConfiguracionJuego* config, Registro_Maquina *reg_maquina, Cont
 
         system("cls");
         printf("\n-----RONDA %d-----\n", partida->n_ronda);
-        f_turno(&reg_maquina, &partida); //Al comienzo de una ronda siempre empieza J1
-        f_turno(&reg_maquina, &partida); //No importa lo que pase, siempre juega tambien J2
+        f_turno(reg_maquina, partida); //Al comienzo de una ronda siempre empieza J1
+        f_turno(reg_maquina, partida); //No importa lo que pase, siempre juega tambien J2
 
         //Hay un ganador? 
         if(partida->hayGanador == NO_FINALIZADA){
@@ -431,7 +433,7 @@ int flujoPartida(ConfiguracionJuego* config, Registro_Maquina *reg_maquina, Cont
         }
     }while(!flagStopGame);
 
-salir_partida(&config, &partida);
+salir_partida(config, partida);
 return (partida->hayGanador != NO_FINALIZADA);
 }
 
@@ -458,7 +460,7 @@ void f_turno(Registro_Maquina *reg_maq, ControlPartida *partida)
     do{
         
         //El jugador dispara, si acierta, puede volver a disparar
-        if(flagResShot = disparo_menu(&J_Turno, &J_Oponente, &reg_maq) != AGUA){
+        if(flagResShot = disparo_menu(J_Turno, J_Oponente, reg_maq) != AGUA){
             printf("\n\n¡Has acertado! Puedes volver a disparar");
             Sleep(3);
 
@@ -477,14 +479,7 @@ void f_turno(Registro_Maquina *reg_maq, ControlPartida *partida)
 
 }
 
-void salir_partida(ConfiguracionJuego* ConfiguracionJuego, ControlPartida* ControlPartida){
 
-    //guardar turno
-    guardar_jugadores(&ControlPartida->jugador1, &ControlPartida->jugador2, &ConfiguracionJuego); //Guarda los jugadores en configuración
-    guardar_config(*ConfiguracionJuego); //Guarda configuración en fichero
-    //MenuPrincipal();
-
-}
 
 
 
@@ -566,7 +561,7 @@ char f_eleccion_barcos(Jugador *pj, Vector_Barcos vectBarcos) {
                 break;
                 
             case 'A'://Caso de colocación de barcos automática
-                colocarAleatorio(pj);
+                colocarAleatorio(pj, &vectBarcos);
                 flag_valid_b = true;
                 break;
                 
@@ -630,7 +625,17 @@ ControlPartida cargar_controlPartida(ConfiguracionJuego config){
     ControlPartida.jugador1.Num_disparos = 0;
     ControlPartida.jugador2.Num_disparos = 0;
     ControlPartida.id_turno = 1;
-    ControlPartida.nBarcosRestantes[1] , ControlPartida.nBarcosRestantes[2] = config.Num_barcos; //!!!
+    ControlPartida.n_ronda=1;
+    ControlPartida.nBarcosRestantes[1] , ControlPartida.nBarcosRestantes[2] = *config.Num_barcos; //!!!
 
     return ControlPartida;
+}
+
+void salir_partida(ConfiguracionJuego* ConfiguracionJuego, ControlPartida* ControlPartida){
+
+    //guardar turno
+    guardar_jugadores(&ControlPartida->jugador1, &ControlPartida->jugador2, ConfiguracionJuego); //Guarda los jugadores en configuración
+    guardar_config(*ConfiguracionJuego); //Guarda configuración en fichero
+    //MenuPrincipal();
+
 }

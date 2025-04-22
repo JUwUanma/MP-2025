@@ -1,5 +1,7 @@
 #ifndef INTERFAZ_H_INCLUDED
 #define INTERFAZ_H_INCLUDED
+
+
 /*
    Precodici�n: N/A
    Postcondici�n: Se limpia la pantalla

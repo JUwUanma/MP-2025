@@ -3,6 +3,8 @@
 #define LONG_MAX_BARCO 100
 #define LONG_MAX_JUEGO 100
 #define LONG_MAX_CONFIG 100
+#include "Interfaz.h"
+
 
 
 //Estructura Barco: Almacena la informacion de cada barco en el sistema

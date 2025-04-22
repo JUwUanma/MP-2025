@@ -5,9 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <windows.h>
-#include "..\\ModuloMemoria\Datos.h"
-#include "..\\ModuloTablero\Tablero.h"
-#include "..\\ModuloInterfaz\Interfaz.h"
+#include "Datos.h"
+
 
 
 enum TIPO_DISPARO {AGUA, TOCADO, HUNDIDO};
@@ -90,7 +89,7 @@ int recorrerBarco(Tablero* T_Flota, Tablero* T_Oponente, int x, int y);
 
 /*P: Tableros existen y x,y dentro de tablero. Hay una casilla de barco en x,y
 Q: Devuelve la orientación (GX) del barco en x, y. Devuelve G315 + 1 (8) si es un barco de una sola casilla*/
-int encontrarOrientacion(Tablero* T_Flota, int x, int y);
+int encontrarOrientación(Tablero* T_Flota, int x, int y);
 
 /*P: Tablero existe, x, y dentro de tablero, orient es la orientación del barco (encontrarOrientacion)
 Q: Devuelve por referencia las coordenadas del extremo*/
@@ -137,7 +136,7 @@ Nota: Función usada para mostrar el resumen de la partida
 void buscarNcasillas(Tablero t, int *valor, char c);
 
 
-
+void resumen_partida(ConfiguracionJuego config, ControlPartida ControlP);
 
 
 
@@ -153,5 +152,8 @@ void cargar_jugador(Jugador *j, ConfiguracionJuego config, int id);
 Postcondición: Devuelve una estructura cargada con los datos inicializados para el control de la partida
 */
 ControlPartida cargar_controlPartida(ConfiguracionJuego config);
+
+void guardar_jugadores(Jugador* j1, Jugador* j2, ConfiguracionJuego *config);
+
 
 #endif //LOGICA_H
