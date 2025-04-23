@@ -443,6 +443,7 @@ void liberar_tablero(Tablero *T) {
 
 
 void borrar_config(ConfiguracionJuego *config){
+    //Deja la estructura que entra por parámetro con valores por defecto y libera espacios de memoria dinámica
     config->Id_J1 = 0;
     strcpy(config->Nomb_J1, "");
     config->Tipo_disparo_J1 = 'A';
