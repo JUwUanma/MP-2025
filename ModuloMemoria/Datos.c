@@ -314,7 +314,8 @@ void modificar_config(ConfiguracionJuego *config) {
         printf("7. Cambiar numero de disparo del Jugador 1\n");
         printf("8. Declarar a Jugador 1 como ganador\n");
         printf("9. Cambiar barcos\n");
-        printf("0. Salir\n");
+        printf("0. Cambiar tamaño del tablero\n");
+        printf("Otro. Salir\n");
         printf("Seleccione una opción: ");
         scanf("%d", &opcion);
         getchar();  // Limpiar el buffer de entrada
@@ -368,16 +369,26 @@ void modificar_config(ConfiguracionJuego *config) {
             
             case 9:
             	modificar_barcos(config);
-
+            	break;
+            	
+			case 0:
+				printf("Nuevo tamaño del tablero: ");
+            	scanf("%d", &config->Tama_tablero);
+            	break;
+            	
+            default:
+                printf("Saliendo del menú.\n");
+                opcion = -1;  // Forzamos salida
+                break;
 
         // Mostrar la configuración actualizada
-        if (opcion != 0) {
+        if (opcion >= 0 && opcion <= ) {
             printf("\nConfiguración actualizada:\n");
             mostrar_configuracion(*config);
         }
 
     }
-	}while (opcion != 0);
+	}while (opcion >= 0 && opcion <= );
 }
 
 
