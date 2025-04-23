@@ -73,7 +73,7 @@ void MenuPrincipal(ConfiguracionJuego config, ControlPartida ControlP, Registro_
                 MenuJuego(config,ControlP,reg_maq);
                 break;
             case 2:
-                limpiarPantalla();
+                system("cls");
                 printf("Saliendo del juego...\n");
                 return;
         }
