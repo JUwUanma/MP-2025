@@ -3,11 +3,6 @@
 
 
 /*
-   Precodici�n: N/A
-   Postcondici�n: Se limpia la pantalla
-*/
-void limpiarPantalla();
-/*
    Precondici�n: N/A
    Postcondici�n: El usuario selecciona una opci�n y se dirige al men� correspondiente.
  */
