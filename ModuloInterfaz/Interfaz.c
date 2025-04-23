@@ -5,16 +5,12 @@
 #include "Datos.h"
 #include "logica.h"
 
-void limpiarPantalla() {
-    system("cls");
-}
-//permite navegar por el men� al usuario utilizando las flechas del teclado
 int navegarMenu(const char *opciones[], int numOpciones) {
     int seleccion = 0;
     int tecla;
 
     while (1) {
-        limpiarPantalla();
+        system("cls");
         printf("\n=== MENU ===\n");
 
         for (int i = 0; i < numOpciones; i++) {
